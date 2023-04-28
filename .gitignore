@@ -1,2 +1,5 @@
 0_datasets/*
 !0_datasets/.gitkeep
+
+node_modules/
+package-lock.json
