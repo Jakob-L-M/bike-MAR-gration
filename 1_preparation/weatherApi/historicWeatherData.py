@@ -25,8 +25,8 @@ def getWeatherData(date):
 
 
 
-firstDate = datetime(2022, 7, 18)
-lastDate = datetime(2023, 5, 7)
+firstDate = datetime(2023, 5, 6)
+lastDate = datetime(2023, 5, 9)
 #loop through all days from 2023-01-01 to now
 while firstDate <= lastDate:
     getWeatherData(firstDate)
