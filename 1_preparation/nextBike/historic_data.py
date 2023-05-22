@@ -17,37 +17,55 @@ db = mysql.connector.connect(
 cursor = db.cursor()
 c = 0
 
+STATION_SQL_HEADER = '''
+INSERT INTO stations (id, name, latitude, longitude, firstSeen, lastSeen, cityId) VALUES
+'''
+STATION_SQL_FOOTER = '''
+ON DUPLICATE KEY UPDATE
+firstSeen = CASE WHEN firstSeen < VALUES(firstSeen) THEN firstSeen ELSE VALUES(firstSeen) END,
+lastSeen = CASE WHEN lastSeen > VALUES(lastSeen) THEN lastSeen ELSE VALUES(lastSeen) END;
+'''
+current_station_sql = STATION_SQL_HEADER
+css_count = 0
+
+BIKE_SQL_HEADER = '''
+INSERT INTO bikes (id, timeId, stationId, latitude, longitude) VALUES
+'''
+current_bike_sql = BIKE_SQL_HEADER
+cbs_count =0
+
 for timestamp in tqdm(glob('../../0_datasets/nextbike/*.json')):
-    c += 1
     time_id = int(timestamp.split('\\')[-1][:-5])//180
     
     with open(timestamp, 'r', encoding='utf-8') as f:
         stations = json.load(f)['countries'][0]['cities'][0]['places']
         
-        try:
-            for station in stations:
-                if not station['bike']:
-                    sql = '''INSERT INTO stations (id, name, latitude, longitude, firstSeen, lastSeen, cityId)
-                    VALUES (%s, %s, %s, %s, %s, %s, 1)
-                    ON DUPLICATE KEY UPDATE
-                    firstSeen = CASE WHEN firstSeen < VALUES(firstSeen) THEN firstSeen ELSE VALUES(firstSeen) END,
-                    lastSeen = CASE WHEN lastSeen > VALUES(lastSeen) THEN lastSeen ELSE VALUES(lastSeen) END;'''
-                    values = [station['uid'], station['name'], station['lat'], station['lng'], time_id, time_id]
 
-                    cursor.execute(sql, values)
+        for station in stations:
+            if not station['bike']:
+                sql = f"({station['uid']}, {station['name']}, {station['lat']}, {station['lng']}, {time_id}, {time_id}, 1),\n"
+                
+                current_station_sql += sql
+                css_count += 1
 
-                    for bike in station['bike_numbers']:
-                        sql = 'INSERT INTO bikes (id, timeId, stationId, latitude, longitude) VALUES (%s, %s, %s, NULL, NULL)'
-                        values = [bike, time_id, station['uid']]
-                        cursor.execute(sql, values)
+                for bike in station['bike_numbers']:
+                    sql = f"({bike}, {time_id}, {station['uid']}, NULL, NULL),"
+                    current_bike_sql += sql
+                    cbs_count += 1
 
-                else:
-                    sql = 'INSERT INTO bikes (id, timeId, stationId, latitude, longitude) VALUES (%s, %s, NULL, %s, %s)'
-                    values = [station['bike_numbers'][0], time_id, station['lat'], station['lng']]
+            else:
+                sql = f"({station['bike_numbers'][0]}, {time_id}, NULL, {station['lat']}, {station['lng']}),"
+                current_bike_sql += sql
+                cbs_count += 1
 
-                    cursor.execute(sql, values)
+    if css_count > 700:
+        cursor.execute(current_station_sql[:-1] + STATION_SQL_FOOTER)
+        db.commit()
+        current_station_sql = STATION_SQL_HEADER
+        css_count = 0
 
-            if c % 15 == 0:
-                db.commit()
-        except:
-            pass
+    if cbs_count > 500: # Marburg has ~400 bike, making sure not to overload the buffer
+        cursor.execute(current_bike_sql[:-1])
+        db.commit()
+        current_station_sql = BIKE_SQL_HEADER
+        cbs_count = 0
