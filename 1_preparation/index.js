@@ -6,15 +6,28 @@ var mysql = require('mysql');
 const scrapeSettings = { method: "Get" };
 
 dotenv.config({ path: './.env' });
+const conf = dotenv.config().parsed
+
+const DB_CONNECTION = mysql.createConnection({
+    host: conf.MYSQL_HOST,
+    user: conf.MYSQL_USER,
+    password: conf.MYSQL_PASSWORD,
+    database: conf.MYSQL_DATABASE
+});
+
 
 const app = express();
 
 app.get('/', (req, res) => {
     console.log('hi')
-    res.sendFile('./index.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
-const conf = dotenv.config().parsed
+app.get('/assets/*', (req, res) => {
+    console.log('sending asset', req.url)
+    res.sendFile(__dirname + req.url);
+});
+
 
 app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
     console.log('Start Scraping')
@@ -79,10 +92,6 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
                 
             }
         })
-    /*
-    INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE    
-name="A", age=19
-*/
 
     res.send('Done')
 })
