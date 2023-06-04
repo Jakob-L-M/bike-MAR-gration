@@ -2,24 +2,26 @@ const express = require('express');
 const dotenv = require('dotenv');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 var mysql = require('mysql');
+const db_functions = require('./db')
 
 const scrapeSettings = { method: "Get" };
 
 dotenv.config({ path: './.env' });
 const conf = dotenv.config().parsed
 
+// dictionary lookup for past station queries
+var station_lookup = {}
+
 const DB_CONNECTION = mysql.createConnection({
     host: conf.MYSQL_HOST,
     user: conf.MYSQL_USER,
     password: conf.MYSQL_PASSWORD,
-    database: conf.MYSQL_DATABASE
+    database: conf.MYSQL_DATABASE,
 });
-
 
 const app = express();
 
 app.get('/', (req, res) => {
-    console.log('hi')
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -27,6 +29,29 @@ app.get('/assets/*', (req, res) => {
     console.log('sending asset', req.url)
     res.sendFile(__dirname + req.url);
 });
+
+app.get('/api/stations', async function (req, res) {
+    let timestamp = Date.now()
+
+    let timeId = Math.floor(timestamp / (180 * 1000))
+
+    if (!station_lookup[timeId]) {
+        let t = await db_functions.get_bike_distribution(timeId, DB_CONNECTION)
+        
+        result = []
+
+        for (let s of t) {
+            // only stations that still exist
+            if (s.lastSeen == timeId) {
+                result.push({'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': Math.floor(Math.random() * 25)})
+            }
+        }
+
+        station_lookup[timeId] = result
+    }
+
+    res.send(station_lookup[timeId])
+})
 
 
 app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
