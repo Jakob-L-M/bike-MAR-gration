@@ -42,15 +42,28 @@ app.get('/api/stations', async function (req, res) {
 
         for (let s of t) {
             // only stations that still exist
-            if (s.lastSeen == timeId) {
-                result.push({'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': Math.floor(Math.random() * 25)})
-            }
+            result.push({'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': s.n})
         }
 
         station_lookup[timeId] = result
     }
-
     res.send(station_lookup[timeId])
+
+    
+})
+
+app.get('/api/rented_info', async function (req, res) {
+    let timestamp = Date.now()
+    let timeId = Math.floor(timestamp / (180 * 1000))
+    
+    let total = (await db_functions.get_num_bikes(timeId, DB_CONNECTION))[0].numBikes
+
+    let result = {}
+    let bike_info = await db_functions.get_rented_bike_info(timeId, DB_CONNECTION)
+    for (i of bike_info) {
+        result[i.timeId] = i.numBikes 
+    }
+    res.send([timeId, total, result])
 })
 
 
