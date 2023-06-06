@@ -12,6 +12,8 @@ let stations = $.getJSON(`/api/stations`, (data) => {
 
 function update_stations(stations) {
     for (s of stations) {
-        L.marker([s.lat, s.lon]).addTo(map)
+        let m = L.marker([s.lat, s.lon])
+        m.bindTooltip(`${s.n}`, { permanent: true, offset: [0, 0] });
+        m.addTo(map)
     }
 }
