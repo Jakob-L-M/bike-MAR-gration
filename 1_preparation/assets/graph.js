@@ -21,8 +21,8 @@ function display_rented_info() {
             }
         }
             let d = [{
-                backgroundColor: "#4c51bf",
-                borderColor: "#4c51bf",
+                backgroundColor: "#ea580c",
+                borderColor: "#ea580c",
                 data: v,
                 fill: false,
                 spanGaps: true
