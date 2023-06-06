@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) =>
+    import ('node-fetch').then(({ default: fetch }) => fetch(...args));
 var mysql = require('mysql');
 const db_functions = require('./db')
 
@@ -8,9 +9,6 @@ const scrapeSettings = { method: "Get" };
 
 dotenv.config({ path: './.env' });
 const conf = dotenv.config().parsed
-
-// dictionary lookup for past station queries
-var station_lookup = {}
 
 const DB_CONNECTION = mysql.createConnection({
     host: conf.MYSQL_HOST,
@@ -30,38 +28,36 @@ app.get('/assets/*', (req, res) => {
     res.sendFile(__dirname + req.url);
 });
 
-app.get('/api/stations', async function (req, res) {
+app.get('/api/stations', async function(req, res) {
+    console.log('db request', req.url)
     let timestamp = Date.now()
 
     let timeId = Math.floor(timestamp / (180 * 1000))
 
-    if (!station_lookup[timeId]) {
-        let t = await db_functions.get_bike_distribution(timeId, DB_CONNECTION)
-        
-        result = []
+    let t = await db_functions.get_bike_distribution(timeId, DB_CONNECTION)
 
-        for (let s of t) {
-            // only stations that still exist
-            result.push({'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': s.n})
-        }
+    result = []
 
-        station_lookup[timeId] = result
+    for (let s of t) {
+        // only stations that still exist
+        result.push({ 'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': s.n })
     }
-    res.send(station_lookup[timeId])
+    res.send(result)
 
-    
+
 })
 
-app.get('/api/rented_info', async function (req, res) {
+app.get('/api/rented_info', async function(req, res) {
+    console.log('db request', req.url)
     let timestamp = Date.now()
     let timeId = Math.floor(timestamp / (180 * 1000))
-    
+
     let total = (await db_functions.get_num_bikes(timeId, DB_CONNECTION))[0].numBikes
 
     let result = {}
     let bike_info = await db_functions.get_rented_bike_info(timeId, DB_CONNECTION)
     for (i of bike_info) {
-        result[i.timeId] = i.numBikes 
+        result[i.timeId] = i.numBikes
     }
     res.send([timeId, total, result])
 })
@@ -127,7 +123,7 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
                     })
                 }
                 console.log('Pushed station', station.name)
-                
+
             }
         })
 
@@ -179,8 +175,8 @@ function normalizePort(val) {
 
 function onListening() {
     var addr = server.address();
-    var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
     console.log('Listening on ' + bind);
 }

@@ -8,41 +8,25 @@ function display_rented_info() {
         let values = data[2]
         // label array
         let l = []
+        let v = []
 
-        console.log(l)
-
-        d = []
-
-        let curr_line = []
         for (let i = timeId - 59; i <= timeId; i++) {
             // there exists a value for the given timeId
             if (i in values) {
-                curr_line.push(total - values[i])
+                v.push(total - values[i])
                 l.push(new Date((i * 180 - 60*(new Date().getTimezoneOffset())) * 1000).toISOString().substring(11, 16))
             } else {
-                // there was a value before
-                if (curr_line.length > 0) {
-                    d.push({
-                        backgroundColor: "#4c51bf",
-                        borderColor: "#4c51bf",
-                        data: curr_line,
-                        fill: false
-                    })
-                    // reset line
-                    curr_line = []
-                }
+                v.push(NaN)
+                l.push(new Date((i * 180 - 60*(new Date().getTimezoneOffset())) * 1000).toISOString().substring(11, 16))
             }
         }
-        if (curr_line.length > 0) {
-            d.push({
+            let d = [{
                 backgroundColor: "#4c51bf",
                 borderColor: "#4c51bf",
-                data: curr_line,
-                fill: false
-            })
-        }
-
-        console.log(d)
+                data: v,
+                fill: false,
+                spanGaps: true
+            }]
 
         document.getElementById('current_bikes').innerHTML = d[d.length - 1].data[d[d.length - 1].data.length - 1]
         
