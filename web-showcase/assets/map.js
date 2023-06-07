@@ -5,15 +5,41 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-let stations = $.getJSON(`/api/stations`, (data) => {
-    console.log(data)
-    update_stations(data)
-})
+var stationMarkers = L.layerGroup().addTo(map);
+var stations = []
 
-function update_stations(stations) {
-    for (s of stations) {
-        let m = L.marker([s.lat, s.lon])
-        m.bindTooltip(`${s.n}`, { permanent: true, offset: [0, 0] });
-        m.addTo(map)
-    }
+const radius = 200
+
+function update_stations() {
+    
+    stationMarkers.clearLayers();
+
+    $.getJSON(`/api/stations`, (data) => {
+
+        stations = data
+
+        for (let station of data) {
+            let m = L.marker([station.lat, station.lon])
+            m.bindTooltip(`${station.n}`, { permanent: true, offset: [0, 0], clickable: false });
+            m.addTo(stationMarkers)
+        }
+        setTimeout(update_stations, 60000); // update every minute to ensure up-to-date data
+    })
+    
 }
+
+update_stations()
+
+map.on('click', function(e) {
+    // remove all current divs
+    $("div.station-pred").remove();
+
+    let click_lat = e.latlng.lat
+    let click_lng = e.latlng.lng
+    for (let station of stations) {
+        if (meter_dist(click_lat, click_lng, station.lat, station.lon) < radius) {
+            console.log(station.name)
+            create_station_prediction(station.name)
+        }
+    }
+});
