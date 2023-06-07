@@ -10,13 +10,15 @@ This data integration project has four components: preparation, data integration
 
 - `data`: This folder explains how we obtained the underlying data. We describe the data pools as well as why and how we use the data.
 
-- `preperation`: Code to extract and load the datasets into a MySQL Database. Here we also do some selections, transformation and perform basic cleaning
+- `preparation`: Code to extract and load the datasets into a MySQL Database. Here we also do some selections, transformation and perform basic cleaning
 
 - `integration`: We perform On-Line integration. The folder includes some of the used queries and information how the different sources are integrated on varying request.
 
 - `prediction-training`: Experiments to use the integrated dataset to predict bike distribution changes.
 
 - `web-showcase`: Code to run the interactive web app and use the integration pipeline.
+
+- `presentations`: Milestone presentations in the context of the course
 
 ## Documentation
 
