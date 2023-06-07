@@ -109,7 +109,7 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
                         for (let bike of station.bike_numbers) {
                             var sql = `INSERT INTO bikes (id, timeId, stationId, latitude, longitude)
                     VALUES (${bike}, ${timeId}, ${station.uid}, NULL, NULL)`
-                            con.query(sql, (err, res) => {
+                            DB_CONNECTION.query(sql, (err, res) => {
                                 if (err) console.log(err)
                             })
                         }
