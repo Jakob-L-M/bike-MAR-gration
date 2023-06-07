@@ -19,6 +19,7 @@ c = 0
 
 STATION_SQL_HEADER = '''
 INSERT INTO stations (id, name, latitude, longitude, firstSeen, lastSeen, cityId) VALUES
+
 '''
 STATION_SQL_FOOTER = '''
 ON DUPLICATE KEY UPDATE
@@ -43,7 +44,7 @@ for timestamp in tqdm(glob('../../0_datasets/nextbike/*.json')):
 
         for station in stations:
             if not station['bike']:
-                sql = f"({station['uid']}, {station['name']}, {station['lat']}, {station['lng']}, {time_id}, {time_id}, 1),\n"
+                sql = f"({station['uid']}, '{station['name']}', {station['lat']}, {station['lng']}, {time_id}, {time_id}, 1),\n"
                 
                 current_station_sql += sql
                 css_count += 1
@@ -59,13 +60,19 @@ for timestamp in tqdm(glob('../../0_datasets/nextbike/*.json')):
                 cbs_count += 1
 
     if css_count > 700:
-        cursor.execute(current_station_sql[:-1] + STATION_SQL_FOOTER)
-        db.commit()
+        try:
+            cursor.execute(current_station_sql[:-2] + STATION_SQL_FOOTER)
+            db.commit()
+        except mysql.connector.errors.IntegrityError:
+            pass
         current_station_sql = STATION_SQL_HEADER
         css_count = 0
 
     if cbs_count > 500: # Marburg has ~400 bike, making sure not to overload the buffer
-        cursor.execute(current_bike_sql[:-1])
-        db.commit()
-        current_station_sql = BIKE_SQL_HEADER
+        try:
+            cursor.execute(current_bike_sql[:-1])
+            db.commit()
+        except mysql.connector.errors.IntegrityError:
+            pass
+        current_bike_sql = BIKE_SQL_HEADER
         cbs_count = 0
