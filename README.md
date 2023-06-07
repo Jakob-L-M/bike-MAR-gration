@@ -1,28 +1,22 @@
-# Data Integration Project 
+# Bike-MAR-Gration
 
-This repository serves as template for the students project accompanying the
-"Data Integration" lecture at University of Marburg.
+As part of the lecture "Data Integration" at the University of Marburg Bela Schinke and Jakob L. Müller launched the (Next)Bike Mar(burg) (inte)gration project.
 
-Students can
-[fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) or copy
-this repository to kick-start their project.
+This document will given an overview over the steps taken, technologies used and the goal we want to archive.
 
 ## Structure
 
-This data integration project has four components: preparation, data
-integration, data cleaning, and showcase.
+This data integration project has four components: preparation, data integration, data cleaning, and showcase.
 
-- `0_datasets`: We recommend to read and write source, intermediate, and final datasets from `0_datasets` directory. Its content is gitignored (i.e., it will not be tracked by Git), use [Hessenbox](https://hessenbox.uni-marburg.de) to sync-and-share your datasets.
-- `1_preparation`: Code to extract and load your datasets into a common space
-  (e.g., sqlite or Jupyter notebook). You might also want to write code to explore the
-datasets.
-- `2_integration`: Experiments to integrate your datasets and a program that
-  implements your final integration pipeline.
-- `3_cleaning`: Experiments to clean your integrated dataset and a program that
-  implements your final data cleaning pipeline.
-- `3_showcase`: Code to implement your showcase. You can already run it against
-  the results of your data integration pipeline, and, finally, against your
-integrated and cleaned data.
+- `data`: This folder explains how we obtained the underlying data. We describe the data pools as well as why and how we use the data.
+
+- `preperation`: Code to extract and load the datasets into a MySQL Database. Here we also do some selections, transformation and perform basic cleaning
+
+- `integration`: We perform On-Line integration. The folder includes some of the used queries and information how the different sources are integrated on varying request.
+
+- `prediction-training`: Experiments to use the integrated dataset to predict bike distribution changes.
+
+- `web-showcase`: Code to run the interactive web app and use the integration pipeline.
 
 ## Documentation
 
