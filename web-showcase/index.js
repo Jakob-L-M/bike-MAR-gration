@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const fetch = (...args) =>
-    import ('node-fetch').then(({ default: fetch }) => fetch(...args));
+    import('node-fetch').then(({ default: fetch }) => fetch(...args));
 var mysql = require('mysql');
 const db_functions = require('./db')
 
@@ -28,7 +28,7 @@ app.get('/assets/*', (req, res) => {
     res.sendFile(__dirname + req.url);
 });
 
-app.get('/api/stations', async function(req, res) {
+app.get('/api/stations', async function (req, res) {
     console.log('db request', req.url)
     let timestamp = Date.now()
 
@@ -47,7 +47,7 @@ app.get('/api/stations', async function(req, res) {
 
 })
 
-app.get('/api/rented_info', async function(req, res) {
+app.get('/api/rented_info', async function (req, res) {
     console.log('db request', req.url)
     let timestamp = Date.now()
     let timeId = Math.floor(timestamp / (180 * 1000))
@@ -68,64 +68,66 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
     let timestamp = Date.now()
 
     let timeId = Math.round(timestamp / (180 * 1000))
-    var con = mysql.createConnection({
-        host: conf.MYSQL_HOST,
-        user: conf.MYSQL_USER,
-        password: conf.MYSQL_PASSWORD,
-        database: conf.MYSQL_DATABASE
-    });
 
+    try {
+        fetch(`http://api.weatherapi.com/v1/current.json?key=${conf.WEATHER_KEY}&q=Marburg&aqi=no`, scrapeSettings)
+            .then(res => res.json())
+            .then((json) => {
+                let cur = json.current
 
-    fetch(`http://api.weatherapi.com/v1/current.json?key=${conf.WEATHER_KEY}&q=Marburg&aqi=no`, scrapeSettings)
-        .then(res => res.json())
-        .then((json) => {
-            let cur = json.current
-
-            var sql = `INSERT INTO weather (timeId, cityId, temp, feelsLikeTemp, isDay, description, cloud, wind, gust)
+                var sql = `INSERT INTO weather (timeId, cityId, temp, feelsLikeTemp, isDay, description, cloud, wind, gust)
             VALUES (${timeId}, 1, ${cur.temp_c}, ${cur.feelslike_c}, ${cur.is_day}, '${cur.condition.text}', ${cur.cloud}, ${cur.wind_kph}, ${cur.gust_kph})`
 
-            con.query(sql, (err, res) => {
-                if (err) console.log(err)
-                else console.log('Pushed weather')
-            })
-        });
+                DB_CONNECTION.query(sql, (err, res) => {
+                    if (err) console.log(err)
+                    else console.log('Pushed weather')
+                })
+            });
 
-    fetch(`https://maps.nextbike.net/maps/nextbike-live.json?city=438&domains=nm&list_cities=0&bikes=0`, scrapeSettings)
-        .then(res => res.json())
-        .then((json) => {
-            let stations = json.countries[0].cities[0].places
-            for (let station of stations) {
+    } catch (e) {
+        console.log(e)
+    }
 
-                if (!station.bike) { // station is a bike
-                    var sql = `INSERT INTO stations (id, name, latitude, longitude, firstSeen, lastSeen, cityId)
+    try {
+        fetch(`https://maps.nextbike.net/maps/nextbike-live.json?city=438&domains=nm&list_cities=0&bikes=0`, scrapeSettings)
+            .then(res => res.json())
+            .then((json) => {
+                let stations = json.countries[0].cities[0].places
+                for (let station of stations) {
+
+                    if (!station.bike) { // station is a bike
+                        var sql = `INSERT INTO stations (id, name, latitude, longitude, firstSeen, lastSeen, cityId)
                 VALUES (${station.uid}, '${station.name}', ${station.lat}, ${station.lng}, ${timeId}, ${timeId}, 1)
                 ON DUPLICATE KEY UPDATE
                 firstSeen = CASE WHEN firstSeen < VALUES(firstSeen) THEN firstSeen ELSE VALUES(firstSeen) END,
                 lastSeen = CASE WHEN lastSeen > VALUES(lastSeen) THEN lastSeen ELSE VALUES(lastSeen) END;`
 
-                    con.query(sql, (err, res) => {
-                        if (err) console.log(err)
-                    })
+                        DB_CONNECTION.query(sql, (err, res) => {
+                            if (err) console.log(err)
+                        })
 
-                    for (let bike of station.bike_numbers) {
-                        var sql = `INSERT INTO bikes (id, timeId, stationId, latitude, longitude)
+                        for (let bike of station.bike_numbers) {
+                            var sql = `INSERT INTO bikes (id, timeId, stationId, latitude, longitude)
                     VALUES (${bike}, ${timeId}, ${station.uid}, NULL, NULL)`
-                        con.query(sql, (err, res) => {
+                            con.query(sql, (err, res) => {
+                                if (err) console.log(err)
+                            })
+                        }
+                    } else { // station less bike
+                        var sql = `INSERT INTO bikes (id, timeId, stationId, latitude, longitude)
+                    VALUES (${station.bike_numbers[0]}, ${timeId}, NULL, ${station.lat}, ${station.lng})`
+
+                        DB_CONNECTION.query(sql, (err, res) => {
                             if (err) console.log(err)
                         })
                     }
-                } else { // station less bike
-                    var sql = `INSERT INTO bikes (id, timeId, stationId, latitude, longitude)
-                    VALUES (${station.bike_numbers[0]}, ${timeId}, NULL, ${station.lat}, ${station.lng})`
+                    console.log('Pushed station', station.name)
 
-                    con.query(sql, (err, res) => {
-                        if (err) console.log(err)
-                    })
                 }
-                console.log('Pushed station', station.name)
-
-            }
-        })
+            })
+    } catch (e) {
+        console.log(e)
+    }
 
     res.send('Done')
 })
