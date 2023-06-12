@@ -6,9 +6,6 @@ import configparser
 
 THREE_MIN_IN_S = 60*3
 
-config = configparser.ConfigParser()
-config.read(r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-MAR-gration\0_datasets\.env")
-
 
 #generate sql insert string from data
 def getSqlinsert(timeId, cityId, temp, feelsLikeTemp, isDay, description, cloud, wind, gust):
@@ -28,6 +25,9 @@ json_folder = r"C:/bike-mar-gration-weatherdata/"
 firstDate = datetime(2022, 7, 18)
 
 #get sql connection
+
+config = configparser.ConfigParser()
+config.read(r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-MAR-gration\0_datasets\.env")
 mydbConfig = config["mysql"]
 mydb = mysql.connector.connect(
     host=mydbConfig["MYSQL_HOST"],
@@ -81,10 +81,11 @@ def interpolate_and_persist(time_in_seconds, timestamp1, timestamp2, mydb_cursor
 
     #persist
     InsertQuerry = f"INSERT INTO weather(timeId, cityId, temp, feelsLikeTemp, isDay, description, cloud, wind, gust) " \
-                   f"VALUES ({timeID}, {cityID}, {temp}, {feelsliketemp}, {isDay}, {description}, {cloud}, {wind}, {gust})"
-
-    #mydb_cursor.execute(InsertQuerry)
-
+                   f"VALUES ({timeID}, {cityID}, {temp}, {feelsliketemp}, {isDay}, \"{description}\", {cloud}, {wind}, {gust})"
+    try:
+        mydb_cursor.execute(InsertQuerry)
+    except mysql.connector.errors.IntegrityError:
+        print(f"Integrity error: {timeID} entry already exists in DB")
 
 #loop through all days from firstDate to lastDate
 f =  open(json_folder + getFileName(firstDate), "r")
@@ -102,8 +103,12 @@ while(True):
     timestamp1 = hourseries[pointer_hourseries]
     pointer_hourseries +=1
     if (pointer_hourseries>=len(hourseries)):
+        mydb.commit()
+        print(f"Finished file for {getFileName(firstDate)}")
+
         pointer_hourseries = 0
         firstDate += timedelta(days=1)
+
         #load new weather file
         try:
             f = open(json_folder + getFileName(firstDate), "r")
