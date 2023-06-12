@@ -45,7 +45,7 @@ def build_model():
 
 #load data from sql to file
 def load_data():
-    DATA_DIR = "C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-MAR-gration/0_datasets/station_at_time_data/"
+    DATA_DIR = "C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-MAR-gration/data/station_at_time_data/"
 
     #create sql connection
     config = configparser.ConfigParser()
@@ -71,18 +71,21 @@ def load_data():
     for (timeID) in tqdm(range(minTimeID, maxTimeID)):
         if (os.path.exists(DATA_DIR+f"{timeID}.pickle")):
             continue
-        querry = f"""SELECT s.latitude, s.longitude, bd.timeID, bd.nrBikes, w.temp, w.feelsLikeTemp, w.description, w.cloud, w.wind, w.gust
-                        FROM (SELECT b.stationId  AS stationId, b.timeId AS timeId, count(b.id) AS nrBikes
-                        FROM bikes b
-                        WHERE b.timeId = {timeID}
-                        GROUP BY b.stationId, b.timeId) AS bd
-                    JOIN stations s ON s.id = bd.stationId
-                    JOIN cities c ON c.id = s.cityId 
-                    JOIN weather w ON w.cityId = s.cityId AND bd.timeId = w.timeId"""
+        querry = f"""
+SELECT s.latitude, s.longitude, bd.timeID, bd.nrBikes, w.temp, w.feelsLikeTemp, w.description, w.cloud, w.wind, w.gust, e.`group` 
+FROM (
+	SELECT b.stationId  AS stationId, b.timeId AS timeId, count(b.id) AS nrBikes
+	FROM bikes b
+	WHERE b.timeId = {timeID}
+	GROUP BY b.stationId, b.timeId) AS bd
+JOIN stations s ON s.id = bd.stationId
+JOIN cities c ON c.id = s.cityId 
+LEFT OUTER JOIN events e ON TO_DAYS(e.`date`) = TO_DAYS(FROM_UNIXTIME(bd.timeId*180))  
+JOIN weather w ON w.cityId = s.cityId AND bd.timeId = w.timeId"""
         mydb_cursor.execute(querry)
         data = mydb_cursor.fetchall()
         #make dataframe
-        df = pd.DataFrame(data, columns=["latitude", "longitude", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust"])
+        df = pd.DataFrame(data, columns=["latitude", "longitude", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust", "event type"])
         #save as pickle
         with open(DATA_DIR+f"{timeID}.pickle", "wb") as file:
             pickle.dump(df, file)
