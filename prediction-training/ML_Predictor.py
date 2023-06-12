@@ -45,11 +45,11 @@ def build_model():
 
 #load data from sql to file
 def load_data():
-    DATA_DIR = "C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-MAR-gration/data/station_at_time_data/"
+    DATA_DIR = "C:\\Users\\belas\\OneDrive\\Documents\\UNI\\Semester 4\\Datenintegration\\bike-Mar-gration\\data\\bikes_at_station\\"
 
     #create sql connection
     config = configparser.ConfigParser()
-    config.read(r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-MAR-gration\0_datasets\.env")
+    config.read(r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\.env")
     mydbConfig = config["mysql"]
     mydb = mysql.connector.connect(
         host=mydbConfig["MYSQL_HOST"],
@@ -59,35 +59,36 @@ def load_data():
     )
     mydb_cursor = mydb.cursor()
 
-    #get timeID min and max
-    querry = """SELECT min(b.timeId) AS minTimeId, max(b.timeId)AS maxTimeId
-                FROM bikes b """
+    #get stations
+    querry = """SELECT s.id 
+                FROM stations s """
     mydb_cursor.execute(querry)
-    minTimeID, maxTimeID = mydb_cursor.fetchall()[0]
+    stations = mydb_cursor.fetchall()
 
 
     #load data
 
-    for (timeID) in tqdm(range(minTimeID, maxTimeID)):
-        if (os.path.exists(DATA_DIR+f"{timeID}.pickle")):
+    for (stationId) in tqdm(stations):
+        if os.path.exists(DATA_DIR + f"{stationId}.pickle"):
             continue
         querry = f"""
-SELECT s.latitude, s.longitude, bd.timeID, bd.nrBikes, w.temp, w.feelsLikeTemp, w.description, w.cloud, w.wind, w.gust, e.`group` 
+SELECT s.latitude, s.longitude, bd.stationId, bd.timeID, bd.nrBikes, w.temp, w.feelsLikeTemp, w.description, w.cloud, w.wind, w.gust, e.`group` 
 FROM (
 	SELECT b.stationId  AS stationId, b.timeId AS timeId, count(b.id) AS nrBikes
 	FROM bikes b
-	WHERE b.timeId = {timeID}
-	GROUP BY b.stationId, b.timeId) AS bd
+	WHERE b.stationId = {stationId[0]} 
+	GROUP BY b.timeId) AS bd
 JOIN stations s ON s.id = bd.stationId
 JOIN cities c ON c.id = s.cityId 
 LEFT OUTER JOIN events e ON TO_DAYS(e.`date`) = TO_DAYS(FROM_UNIXTIME(bd.timeId*180))  
-JOIN weather w ON w.cityId = s.cityId AND bd.timeId = w.timeId"""
+JOIN weather w ON w.cityId = s.cityId AND bd.timeId = w.timeId
+"""
         mydb_cursor.execute(querry)
         data = mydb_cursor.fetchall()
         #make dataframe
-        df = pd.DataFrame(data, columns=["latitude", "longitude", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust", "event type"])
+        df = pd.DataFrame(data, columns=["latitude", "longitude", "stationId", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust", "event type"])
         #save as pickle
-        with open(DATA_DIR+f"{timeID}.pickle", "wb") as file:
+        with open(DATA_DIR+f"{stationId[0]}.pickle", "wb") as file:
             pickle.dump(df, file)
 
 
