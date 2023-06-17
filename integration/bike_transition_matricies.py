@@ -28,7 +28,6 @@ def get_trips_for_bike(bike_id):
     # bikeId, tripNum, start_time, end_time, station, lat, lon, nextStation
 
     next_known = 0
-    c = 1
     
     for record in list(cursor.fetchall()):
         if record[1] >= next_known: # record[1]: timeId -> check if we don't know how this trip ends
@@ -57,13 +56,12 @@ def get_trips_for_bike(bike_id):
                 raise LookupError()
             trip = trip[0]
 
-            trips.append([bike_id, c, trip[4],
+            trips.append([bike_id, trip[4],
                           trip[5], trip[1],
                           trip[2] if trip[2] == None else float(trip[2]),
                           trip[3] if trip[3] == None else float(trip[3]),
                           next_station[0][2]])
 
-            c += 1 # increase trip counter
             next_known = upper_time
 
     return trips
