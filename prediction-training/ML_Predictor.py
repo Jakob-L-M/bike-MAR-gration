@@ -14,7 +14,7 @@ import tensorflow as tf
 def findRow(timeID, df, allowedError=0):
     #binary search for timeID
     left = 0
-    right = len(df)
+    right = len(df)-1
     while (left < right):
         mid = (left + right) // 2
         if (df["timeID"][mid] == timeID):
@@ -217,7 +217,7 @@ def build_train_test_data():
     train_test_data = []
     print("constructing train and test data...")
     for index, df in enumerate(dataframes):
-        print("started Dataframe "+str(index)+" of "+str(len(dataframes)))
+        print("\nstarted Dataframe "+str(index+1)+" of "+str(len(dataframes))+"\n")
         for timeID in tqdm(df["timeID"]):
             output = toOutputFormat(df, timeID)
             if (output is None):
