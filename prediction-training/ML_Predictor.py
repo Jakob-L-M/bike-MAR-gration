@@ -142,7 +142,7 @@ def toInputFormat(dataframe, timeID):
     row120 = findRow(timeID - 40, dataframe)
     #check if rows exist
     if (row6 == -1 or row15 == -1 or row30 == -1 or row120 == -1):
-        return None, False
+        return None
     #number of bikes at station t = -6
     input.append(dataframe["nrBikes"][row6])
     #number of bikes at station t = -15
@@ -175,7 +175,7 @@ def toInputFormat(dataframe, timeID):
     input.append(timexy[0])
     input.append(timexy[1])
 
-    return np.array(input), True
+    return np.array(input)
 
 def toOutputFormat(dataframe, timeID):
     row = findRow(timeID+5, dataframe)
@@ -198,7 +198,7 @@ def readData():
 #build model using tensorflow
 def build_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(15, activation='relu', input_shape=[20]),
+        tf.keras.layers.Dense(19, activation='relu', input_shape=[199]),
         tf.keras.layers.Dense(15, activation='relu'),
         tf.keras.layers.Dense(4) #output: t+15,t+30,t+45,t+60
     ])
@@ -256,20 +256,24 @@ def build_train_test_data():
     print("data build & save complete")
     return True
 
-build_train_test_data()
+#build_train_test_data()
 
 def load_train_test_data():
     path_to_train_test_data = r"C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-Mar-gration/data/train_test_data/"
-    train_data_x = pickle.load(path_to_train_test_data+"train_data_x.pickle")
-    train_data_y = pickle.load(path_to_train_test_data+"train_data_y.pickle")
-    test_data_x = pickle.load(path_to_train_test_data+"test_data_x.pickle")
-    test_data_y = pickle.load(path_to_train_test_data+"test_data_y.pickle")
-    return train_data_x, train_data_y, test_data_x, test_data_y
+    with open(path_to_train_test_data+"train_data_x.pickle", "rb") as f:
+        train_X = pickle.load(f)
+    with open(path_to_train_test_data+"train_data_y.pickle", "rb") as f:
+        train_Y = pickle.load(f)
+    with open(path_to_train_test_data+"test_data_x.pickle", "rb") as f:
+        test_X = pickle.load(f)
+    with open(path_to_train_test_data+"test_data_y.pickle", "rb") as f:
+        test_Y = pickle.load(f)
+    return np.array(train_X, dtype=np.float32), np.array(train_Y, dtype=np.float32), np.array(test_X, dtype=np.float32), np.array(test_Y, dtype=np.float32)
 
 def init_and_save_model():
     model = build_model()
     model.save("models/model01.h5")
-#init_and_save_model()
+init_and_save_model()
 
 def load_model_and_train():
     print("Loading model...")
@@ -277,6 +281,11 @@ def load_model_and_train():
     model = tf.keras.models.load_model("models/"+model_name)
     print("loading data...")
     train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()
+    train_data_x = tf.convert_to_tensor(train_data_x)
+    train_data_y = tf.convert_to_tensor(train_data_y)
+    test_data_x = tf.convert_to_tensor(test_data_x)
+    test_data_y = tf.convert_to_tensor(test_data_y)
+    #train model
     print("Training model...")
     model.fit(train_data_x, train_data_y, epochs=10)
     #test model
@@ -290,6 +299,6 @@ def load_model_and_train():
     model.save("models/model01.h5")
 
 
-
+load_model_and_train()
 
 
