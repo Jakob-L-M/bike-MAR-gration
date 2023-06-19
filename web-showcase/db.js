@@ -122,9 +122,12 @@ async function update_bike_trips(DB, bike_id, start) {
                 q += sql
             }
             q = q.substring(0, q.length - 1) + ';'
-            console.log(q)
+            DB.query(q, (err, res) => {
+                if (err) console.log(err)
+            })
 
-        main_res(true)
+
+            main_res(true)
         })
     })
 }
