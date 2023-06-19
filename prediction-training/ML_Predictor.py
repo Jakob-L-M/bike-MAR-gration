@@ -1,12 +1,108 @@
-import configparser
-
-import mysql.connector
+import math
+import os
 import pickle
+import random
+from datetime import datetime as dt
+from tqdm.auto import tqdm
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+
 import pandas as pd
 import tensorflow as tf
-from tqdm.auto import tqdm
-import os
 
+def findRow(timeID, df, allowedError=0):
+    #binary search for timeID
+    left = 0
+    right = len(df)
+    while (left < right):
+        mid = (left + right) // 2
+        if (df["timeID"][mid] == timeID):
+            return mid
+        elif (df["timeID"][mid] < timeID):
+            left = mid + 1
+        else:
+            right = mid
+    if (abs(df["timeID"][left] - timeID) < allowedError):
+        return left
+    else:
+        return -1
+
+
+
+#df columns=["latitude", "longitude", "stationId", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust", "event type"]
+def normalise_latitude(lat):
+    return (lat - 50.808048)
+def normalise_longitude(long):
+    return (long - 8.768440)
+
+
+def decription_to_numeric(description):
+    possibilities = [#rain descriptions from data, sort by intensity
+        "Sunny",
+        "Clear",
+        "Partly cloudy",
+        "Mist",
+        "Cloudy",
+        "Fog",
+        "Patchy light drizzle",
+        "Patchy rain possible",
+        "Patchy light rain",
+        "Light rain shower",
+        "Light drizzle",
+        "Light rain",
+        "Freezing fog",
+        "Moderate rain at times",
+        "Patchy snow possible",
+        "Patchy light snow",
+        "Patchy sleet possible",
+        "Light snow showers",
+        "Light snow",
+        "Light freezing rain",
+        "Light sleet",
+        "Moderate rain",
+        "Patchy light rain with thunder",
+        "Patchy moderate snow",
+        "Moderate snow",
+        "Patchy heavy snow",
+        "Thunder outbreaks possible",
+        "Moderate or heavy rain shower",
+        "Moderate or heavy snow showers",
+        "Heavy rain at times"
+        "Moderate or heavy sleet",
+        "Heavy snow",
+        "Moderate or heavy rain with thunder",
+        "Blizzard"
+    ]
+    if (description in possibilities):
+        return possibilities.index(description)/len(possibilities)
+    else:
+        #raise error, so that new descriptions can be added
+        return 0.5
+
+
+def getWeekday(timeID):
+    unix = timeID * 180
+    date = dt.fromtimestamp(unix)
+    wd = date.weekday()
+    #get weekday as 3-bit binary tuple
+    return ((wd & 4)>>2, (wd & 2)>>1, wd & 1)
+
+
+def eventType_to_numeric(eventType):
+    if (eventType is None):
+        return 0
+    else:
+        return 1
+
+
+def getXY(timeID):
+    date = dt.fromtimestamp(timeID * 180)
+    time = date.time()
+    timefloat = (time.hour/24 + time.minute/1440) * 2 * math.pi
+    x = math.sin(timefloat)
+    y = math.cos(timefloat)
+    return (x, y)
 
 #Model architecture: 15*15*24
 #input Layer: 15 nodes:
@@ -17,23 +113,94 @@ import os
 # 5 : number of bikes at station t = -15
 # 6 : number of bikes at station t = -30
 # 7 : number of bikes at station t = -120
-# 9 : weather temp
-# 10 : weather feelsLikeTemp
-# 11 : weather description (parsed & normalised)
-# 12 : weather cloud
-# 13 : weather wind
-# 14 : weather gust
-# 15, 16, 17 : weekday as 3-bit binary
-# 18 : isHoliday
-# 19, 20 : timeX, timeY , coordinates on 24h clock
+# 8 : weather temp
+# 9 : weather feelsLikeTemp
+# 10 : weather description (parsed & normalised)
+# 11 : weather cloud
+# 12 : weather wind
+# 13 : weather gust
+# 14, 15, 16 : weekday as 3-bit binary
+# 17 : isHoliday
+# 18, 19 : timeX, timeY , coordinates on 24h clock
+def toInputFormat(dataframe, timeID):
+    input = []
+    row = findRow(timeID, dataframe)
+
+    #latitude
+    input.append(normalise_latitude(float(dataframe["latitude"][row])))
+    #longitude
+    input.append(normalise_longitude(float(dataframe["longitude"][row])))
+    #number of bikes at station t = 0
+    input.append(dataframe["nrBikes"][row])
+    #row for t = -6
+    row6 = findRow(timeID - 2, dataframe)
+    #row for t = -15
+    row15 = findRow(timeID - 5, dataframe)
+    #row for t = -30
+    row30 = findRow(timeID - 10, dataframe)
+    #row for t = -120
+    row120 = findRow(timeID - 40, dataframe)
+    #check if rows exist
+    if (row6 == -1 or row15 == -1 or row30 == -1 or row120 == -1):
+        return None, False
+    #number of bikes at station t = -6
+    input.append(dataframe["nrBikes"][row6])
+    #number of bikes at station t = -15
+    input.append(dataframe["nrBikes"][row15])
+    #number of bikes at station t = -30
+    input.append(dataframe["nrBikes"][row30])
+    #number of bikes at station t = -120
+    input.append(dataframe["nrBikes"][row120])
+    #weather temp
+    input.append(dataframe["temp"][row])
+    #weather feelsLikeTemp
+    input.append(dataframe["feelsLikeTemp"][row])
+    #weather description (parsed & normalised)
+    input.append(decription_to_numeric(dataframe["description"][row]))
+    #weather cloud
+    input.append(dataframe["cloud"][row])
+    #weather wind
+    input.append(dataframe["wind"][row])
+    #weather gust
+    input.append(dataframe["gust"][row])
+    #weekday as 3-bit binary
+    weekday = getWeekday(dataframe["timeID"][row])
+    input.append(weekday[0])
+    input.append(weekday[1])
+    input.append(weekday[2])
+    #isHoliday
+    input.append(eventType_to_numeric(dataframe["event type"][row]))
+    #timeX, timeY , coordinates on 24h clock
+    timexy = getXY(dataframe["timeID"][row])
+    input.append(timexy[0])
+    input.append(timexy[1])
+
+    return np.array(input), True
+
+def toOutputFormat(dataframe, timeID):
+    row = findRow(timeID+5, dataframe)
+    if (row == -1):
+        return None
+    else:
+        return dataframe["nrBikes"][row]
+
+
+def readData():
+    path_to_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\bikes_at_station/"
+    dataframes = []
+    for file in tqdm(os.listdir(path_to_data)):
+        if file.endswith(".pickle"):
+            df = pd.read_pickle(path_to_data + file)
+            dataframes.append(df)
+    return dataframes
 
 
 #build model using tensorflow
 def build_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(15, activation='relu', input_shape=[15]),
+        tf.keras.layers.Dense(15, activation='relu', input_shape=[20]),
         tf.keras.layers.Dense(15, activation='relu'),
-        tf.keras.layers.Dense(24)
+        tf.keras.layers.Dense(4) #output: t+15,t+30,t+45,t+60
     ])
 
     optimizer = tf.keras.optimizers.RMSprop(0.001)
@@ -43,54 +210,85 @@ def build_model():
                 metrics=['mae', 'mse'])
     return model
 
-#load data from sql to file
-def load_data():
-    DATA_DIR = "C:\\Users\\belas\\OneDrive\\Documents\\UNI\\Semester 4\\Datenintegration\\bike-Mar-gration\\data\\bikes_at_station\\"
+#build train and test data
+def build_train_test_data():
+    print("reading data to dataframes...")
+    dataframes = readData()
+    train_test_data = []
+    print("constructing train and test data...")
+    for index, df in enumerate(dataframes):
+        print("started Dataframe "+str(index)+" of "+str(len(dataframes)))
+        for timeID in tqdm(df["timeID"]):
+            output = toOutputFormat(df, timeID)
+            if (output is None):
+                continue
+            input = toInputFormat(df, timeID)
+            if (input is None):
+                continue
+            train_test_data.append((input, output))
+    print("splitting train and test data...")
+    random.shuffle(train_test_data)
+    #train test split
+    train_data, test_data = train_test_split(train_test_data, test_size=0.2)
+    #split into input and output
+    train_data_x = []
+    train_data_y = []
+    for data in train_data:
+        train_data_x.append(data[0])
+        train_data_y.append(data[1])
+    test_data_x = []
+    test_data_y = []
+    for data in test_data:
+        test_data_x.append(data[0])
+        test_data_y.append(data[1])
 
-    #create sql connection
-    config = configparser.ConfigParser()
-    config.read(r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\.env")
-    mydbConfig = config["mysql"]
-    mydb = mysql.connector.connect(
-        host=mydbConfig["MYSQL_HOST"],
-        user=mydbConfig["MYSQL_USER"],
-        password=mydbConfig["MYSQL_PASSWORD"],
-        database=mydbConfig["MYSQL_DATABASE"]
-    )
-    mydb_cursor = mydb.cursor()
+    #save to file with pickle
+    path_to_train_test_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\train_test_data/"
+    print("saving train and test data...")
+    with open(path_to_train_test_data+"train_data_x.pickle", "wb") as f:
+        pickle.dump(train_data_x, f)
+    with open(path_to_train_test_data+"train_data_y.pickle", "wb") as f:
+        pickle.dump(train_data_y, f)
+    with open(path_to_train_test_data+"test_data_x.pickle", "wb") as f:
+        pickle.dump(test_data_x, f)
+    with open(path_to_train_test_data+"test_data_y.pickle", "wb") as f:
+        pickle.dump(test_data_y, f)
+    return True
 
-    #get stations
-    querry = """SELECT s.id 
-                FROM stations s """
-    mydb_cursor.execute(querry)
-    stations = mydb_cursor.fetchall()
+build_train_test_data()
+
+def load_train_test_data():
+    path_to_train_test_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\train_test_data/"
+    train_data_x = pickle.load(path_to_train_test_data+"train_data_x.pickle")
+    train_data_y = pickle.load(path_to_train_test_data+"train_data_y.pickle")
+    test_data_x = pickle.load(path_to_train_test_data+"test_data_x.pickle")
+    test_data_y = pickle.load(path_to_train_test_data+"test_data_y.pickle")
+    return train_data_x, train_data_y, test_data_x, test_data_y
+
+def init_and_save_model():
+    model = build_model()
+    model.save("models/model01.h5")
+#init_and_save_model()
+
+def load_model_and_train():
+    print("Loading model...")
+    model_name = "model01.h5"
+    model = tf.keras.models.load_model("models/"+model_name)
+    print("loading data...")
+    train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()
+    print("Training model...")
+    model.fit(train_data_x, train_data_y, epochs=10)
+    #test model
+    print("Testing model...")
+    test_loss, test_mae, test_mse = model.evaluate(test_data_x, test_data_y, verbose=2)
+    print("Test loss: " + str(test_loss))
+    print("Test MAE: " + str(test_mae))
+    print("Test MSE: " + str(test_mse))
+    #save model
+    print("Saving model...")
+    model.save("models/model01.h5")
 
 
-    #load data
-
-    for (stationId) in tqdm(stations):
-        if os.path.exists(DATA_DIR + f"{stationId}.pickle"):
-            continue
-        querry = f"""
-SELECT s.latitude, s.longitude, bd.stationId, bd.timeID, bd.nrBikes, w.temp, w.feelsLikeTemp, w.description, w.cloud, w.wind, w.gust, e.`group` 
-FROM (
-	SELECT b.stationId  AS stationId, b.timeId AS timeId, count(b.id) AS nrBikes
-	FROM bikes b
-	WHERE b.stationId = {stationId[0]} 
-	GROUP BY b.timeId) AS bd
-JOIN stations s ON s.id = bd.stationId
-JOIN cities c ON c.id = s.cityId 
-LEFT OUTER JOIN events e ON TO_DAYS(e.`date`) = TO_DAYS(FROM_UNIXTIME(bd.timeId*180))  
-JOIN weather w ON w.cityId = s.cityId AND bd.timeId = w.timeId
-"""
-        mydb_cursor.execute(querry)
-        data = mydb_cursor.fetchall()
-        #make dataframe
-        df = pd.DataFrame(data, columns=["latitude", "longitude", "stationId", "timeID", "nrBikes", "temp", "feelsLikeTemp", "description", "cloud", "wind", "gust", "event type"])
-        #save as pickle
-        with open(DATA_DIR+f"{stationId[0]}.pickle", "wb") as file:
-            pickle.dump(df, file)
 
 
 
-load_data()
