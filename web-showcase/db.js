@@ -16,7 +16,7 @@ async function get_bike_distribution(timeId, DB) {
 }
 
 async function get_rented_bike_info(timeId, DB) {
-    sql = `SELECT timeId, COUNT(DISTINCT id) as numBikes FROM bikes WHERE timeId BETWEEN ${timeId - 59} AND ${timeId} GROUP BY timeId`
+    sql = `SELECT timeId, COUNT(DISTINCT id) as numBikes FROM bikes WHERE timeId BETWEEN ${timeId - 29} AND ${timeId} GROUP BY timeId`
 
     return await (new Promise((res, rej) => {
         DB.query(sql, (err, result) => {

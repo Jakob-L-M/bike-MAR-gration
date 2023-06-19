@@ -1,3 +1,10 @@
-function load_page(file, id) {
-    $.get()
+let current = 'live_analytics'
+
+function show_page(group) {
+    $(`.${current}`).hide()
+    $(`.${group}`).show()
+    current = group
+
 }
+    
+show_page('map_view')
