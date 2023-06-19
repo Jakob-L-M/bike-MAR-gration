@@ -1,9 +1,6 @@
 import mysql.connector
 from dotenv import load_dotenv
 import os
-from glob import glob
-import json
-from tqdm import tqdm
 
 load_dotenv('../.env')
 
@@ -16,7 +13,9 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
-cursor.execute("SELECT id, startTime FROM (SELECT DISTINCT id FROM bikes) b LEFT JOIN ( SELECT bikeId, MAX(startTime) as startTime FROM trips GROUP BY bikeId) t ON b.id = t.bikeId;")
+# Only consider bikes that are currently at some station
+# If bike is rented, the trip entry can not change anyway
+cursor.execute(f"SELECT id, startTime FROM (SELECT DISTINCT id FROM bikes WHERE timeId >= (SELECT MAX(timeId) FROM bikes)) b LEFT JOIN ( SELECT bikeId, MAX(startTime) as startTime FROM trips GROUP BY bikeId) t ON b.id = t.bikeId;")
 
 # bikeId, max known startTime
 bikes = cursor.fetchall()
@@ -31,7 +30,7 @@ def get_trips_for_bike(bike_tuple):
 
     trips = []
     # list of trips where each trip is:
-    # bikeId, start_time, end_time, station, lat, lon, nextStation
+    # bikeId, start_time, end_time, station, lat, lon, nextStationId, nextStationStart
 
     next_known = 0
 
@@ -93,7 +92,10 @@ def update_bike(bike_tuple):
     cursor.execute(sql)
     db.commit()
     print(f"Added {len(trips)} for bike {bike_tuple[0]}")
+    return len(trips) - 1
 
+s = 0
 for i, b in enumerate(bikes):           
     print(i+1, '/', len(bikes), sep='', end=' ')
-    update_bike(b)
+    s += update_bike(b)
+print('Added', s, 'new trips in total')
