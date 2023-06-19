@@ -186,7 +186,7 @@ def toOutputFormat(dataframe, timeID):
 
 
 def readData():
-    path_to_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\bikes_at_station/"
+    path_to_data = r"C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-Mar-gration/data/bikes_at_station/"
     dataframes = []
     for file in tqdm(os.listdir(path_to_data)):
         if file.endswith(".pickle"):
@@ -215,9 +215,9 @@ def build_train_test_data():
     print("reading data to dataframes...")
     dataframes = readData()
     train_test_data = []
-    print("constructing train and test data...")
+    print("\nconstructing train and test data...")
     for index, df in enumerate(dataframes):
-        print("\nstarted Dataframe "+str(index+1)+" of "+str(len(dataframes))+"\n")
+        print("\nstarted Dataframe "+str(index+1)+" of "+str(len(dataframes)))
         for timeID in tqdm(df["timeID"]):
             output = toOutputFormat(df, timeID)
             if (output is None):
@@ -243,7 +243,7 @@ def build_train_test_data():
         test_data_y.append(data[1])
 
     #save to file with pickle
-    path_to_train_test_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\train_test_data/"
+    path_to_train_test_data = r"C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-Mar-gration/data/train_test_data/"
     print("saving train and test data...")
     with open(path_to_train_test_data+"train_data_x.pickle", "wb") as f:
         pickle.dump(train_data_x, f)
@@ -253,12 +253,13 @@ def build_train_test_data():
         pickle.dump(test_data_x, f)
     with open(path_to_train_test_data+"test_data_y.pickle", "wb") as f:
         pickle.dump(test_data_y, f)
+    print("data build & save complete")
     return True
 
 build_train_test_data()
 
 def load_train_test_data():
-    path_to_train_test_data = r"C:\Users\belas\OneDrive\Documents\UNI\Semester 4\Datenintegration\bike-Mar-gration\data\train_test_data/"
+    path_to_train_test_data = r"C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-Mar-gration/data/train_test_data/"
     train_data_x = pickle.load(path_to_train_test_data+"train_data_x.pickle")
     train_data_y = pickle.load(path_to_train_test_data+"train_data_y.pickle")
     test_data_x = pickle.load(path_to_train_test_data+"test_data_x.pickle")
