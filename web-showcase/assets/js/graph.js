@@ -10,7 +10,7 @@ function display_rented_info() {
         let l = []
         let v = []
 
-        for (let i = timeId - 59; i <= timeId; i++) {
+        for (let i = timeId - 29; i <= timeId; i++) {
             // there exists a value for the given timeId
             if (i in values) {
                 v.push(total - values[i])

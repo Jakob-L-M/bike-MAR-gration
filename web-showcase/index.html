@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <link rel="shortcut icon" href="./assets/img/favicon.ico" />
+    <link rel="icon" href="/assets/img/favicon.ico" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"
@@ -17,11 +17,11 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
 
-    <script src="/assets/utils.js"></script>
-    <script src="/assets/graph.js" defer></script>
-    <script src="/assets/map.js" defer></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/graph.js" defer></script>
+    <script src="/assets/js/map.js" defer></script>
 
     <title>Bike-MAR-Gration</title>
 </head>
@@ -43,15 +43,21 @@
                             <div class="items-center flex">
                                 <span class="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"><img
                                         alt="..." class="w-full rounded-full align-middle border-none shadow-lg"
-                                        src="./assets/img/team-1-800x800.jpg" /></span>
+                                        src="/assets/img/qm.png" /></span>
                             </div>
                         </a>
                         <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1" style="min-width: 12rem;" id="user-responsive-dropdown">
 
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Code</a><a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Documentation</a>
+                            <a href="https://github.com/Jakob-L-M/bike-MAR-gration" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                                Code & Documentation
+                            </a>
+                            
                             <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Bela</a>
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                            
+                            <a href="#bela" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                                Bela
+                            </a>
+                            <a href="https://jakob-l-m.de" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
                                 Jakob
                             </a>
                         </div>
@@ -74,11 +80,15 @@
                     </div>
                     <ul class="md:flex-col md:min-w-full flex flex-col list-none">
                         <li class="items-center">
-                            <a class="text-orange-500 hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/dashboard"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="console.log(1)"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
                                 Map View</a>
                         </li>
                         <li class="items-center">
-                            <a class="text-blueGray-700 hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/landing"><i class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/dashboard"><i class="fas fa-chart-line opacity-75 mr-2 text-sm"></i>
+                                Live Analytics</a>
+                        </li>
+                        <li class="items-center">
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/landing"><i class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
                                 Historic Analysis</a>
                         </li>
                         <li class="items-center">
@@ -108,11 +118,6 @@
                                                     Bikes currently rented
                                                 </h5>
                                                 <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
-                                            </div>
-                                            <div class="relative w-auto pl-4 flex-initial">
-                                                <div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-blue-500">
-                                                    <i class="far fa-chart-bar"></i>
-                                                </div>
                                             </div>
                                         </div>
                                         <div class="p-4 flex-auto">
