@@ -31,6 +31,25 @@ async function get_rented_bike_info(timeId, DB) {
     }))
 }
 
+async function get_number_of_trips(DB, since) {
+    // since is the number of 3min intervals
+    sql = `SELECT COUNT(*) AS n FROM trips
+    WHERE ROUND(UNIX_TIMESTAMP(CURTIME(4))/180) - endTime <= ${since}
+    AND nextStartTime IS NOT NULL`
+
+    return await (new Promise((res, rej) => {
+        DB.query(sql, (err, result) => {
+            if (err) {
+                console.log(err)
+                rej(err)
+            } else {
+                res(result[0].n)
+            }
+        })
+
+    }))
+}
+
 async function get_num_bikes(timeId, DB) {
     sql = `SELECT COUNT(DISTINCT id) as numBikes FROM bikes WHERE timeId BETWEEN ${timeId - 120} AND ${timeId}`
 
@@ -48,7 +67,7 @@ async function get_num_bikes(timeId, DB) {
 }
 
 async function update_trips(DB) {
-    DB.query("SELECT id, startTime FROM (SELECT DISTINCT id FROM bikes WHERE timeId >= (SELECT MAX(timeId) FROM bikes)) b LEFT JOIN ( SELECT bikeId, MAX(startTime) as startTime FROM trips GROUP BY bikeId) t ON b.id = t.bikeId;", async (err, res) => {
+    DB.query("SELECT id, startTime FROM (SELECT DISTINCT id FROM bikes WHERE timeId = (SELECT MAX(timeId) FROM bikes)) b LEFT JOIN ( SELECT bikeId, MAX(startTime) as startTime FROM trips GROUP BY bikeId) t ON b.id = t.bikeId;", async (err, res) => {
         if (err) {
             console.log(err);
             return
@@ -136,5 +155,6 @@ module.exports = {
     get_bike_distribution,
     get_rented_bike_info,
     get_num_bikes,
+    get_number_of_trips,
     update_trips
 }

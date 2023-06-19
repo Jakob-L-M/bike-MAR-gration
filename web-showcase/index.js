@@ -21,12 +21,19 @@ const app = express();
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
+    db_functions.get_number_of_trips(DB_CONNECTION, 20)
 });
 
 app.get('/assets/*', (req, res) => {
     console.log('sending asset', req.url)
     res.sendFile(__dirname + req.url);
 });
+
+app.get('/api/trips_since', async function (req, res) {
+    console.log('db request', req.url)
+    let n = await db_functions.get_number_of_trips(DB_CONNECTION, 20)
+    res.send([n]) // list so its not interpreted as status
+})
 
 app.get('/api/stations', async function (req, res) {
     console.log('db request', req.url)
@@ -63,14 +70,14 @@ app.get('/api/rented_info', async function (req, res) {
 })
 
 
-app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
+app.get(`/${conf.SCRAPE_TRIGGER}`, async (req, res) => {
     console.log('Start Scraping')
     let timestamp = Date.now()
 
     let timeId = Math.round(timestamp / (180 * 1000))
 
     try {
-        fetch(`http://api.weatherapi.com/v1/current.json?key=${conf.WEATHER_KEY}&q=Marburg&aqi=no`, scrapeSettings)
+        await fetch(`http://api.weatherapi.com/v1/current.json?key=${conf.WEATHER_KEY}&q=Marburg&aqi=no`, scrapeSettings)
             .then(res => res.json())
             .then((json) => {
                 let cur = json.current
@@ -89,9 +96,9 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
     }
 
     try {
-        fetch(`https://maps.nextbike.net/maps/nextbike-live.json?city=438&domains=nm&list_cities=0&bikes=0`, scrapeSettings)
+        await fetch(`https://maps.nextbike.net/maps/nextbike-live.json?city=438&domains=nm&list_cities=0&bikes=0`, scrapeSettings)
             .then(res => res.json())
-            .then((json) => {
+            .then(async (json) => {
                 let stations = json.countries[0].cities[0].places
                 for (let station of stations) {
 
@@ -121,15 +128,14 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
                             if (err) console.log(err)
                         })
                     }
-                    console.log('Pushed station', station.name)
 
                 }
-            })
+            }
+            )
     } catch (e) {
         console.log(e)
     }
-
-    db_functions.update_trips(DB_CONNECTION)
+    await db_functions.update_trips(DB_CONNECTION)
 
     res.send('Done')
 })
