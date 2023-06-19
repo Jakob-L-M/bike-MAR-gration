@@ -129,6 +129,8 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, (req, res) => {
         console.log(e)
     }
 
+    db_functions.update_trips(DB_CONNECTION)
+
     res.send('Done')
 })
 
