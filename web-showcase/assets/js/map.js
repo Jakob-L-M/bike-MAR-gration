@@ -25,6 +25,9 @@ function update_stations() {
         }
         setTimeout(update_stations, 60000); // update every minute to ensure up-to-date data
     })
+
+    // also auto update trip info
+    update_trip_info()
     
 }
 

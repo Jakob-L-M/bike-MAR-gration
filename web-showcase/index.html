@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/creativetimofficial/tailwind-starter-kit/compiled-tailwind.min.css" />
+
+    <!-- Tailwind -->
+    <link rel="stylesheet" href="/assets/css/tw.css" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -96,7 +98,7 @@
                 </div>
             </div>
         </nav>
-        <div class="relative md:ml-64 bg-blueGray-50 h-full">
+        <div class="relative md:ml-64 h-full">
             <div class="px-4 md:px-10 mx-auto w-full h-full">
                 <div id="main" class="pt-6">
                     <!-- Map view -->
@@ -124,12 +126,12 @@
                     </div>
 
                     <!-- Live Analytics-->
-                    <div class="relative bg-orange-600 pb-32 pt-12 live_analytics hidden">
+                    <div class="relative pb-32 pt-12 live_analytics hidden">
                         <div class="px-4 md:px-10 mx-auto w-full">
                             <div>
-                                <!-- Card stats -->
+                                <!-- Rental history -->
                                 <div class="flex flex-wrap">
-                                    <div class="w-full lg:w-12/12 xl:w-12/12 px-4">
+                                    <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
                                         <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
                                             <div class="flex-auto p-4">
                                                 <div class="flex flex-wrap">
@@ -141,9 +143,45 @@
                                                     </div>
                                                 </div>
                                                 <div class="p-4 flex-auto">
-                                                    <!-- Leaflet Map -->
+                                                    <!-- Rented bikes chart -->
                                                     <div class="relative" style="height:150px">
                                                         <canvas id="rented-chart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Trip Stats -->
+                                <div class="flex flex-wrap">
+                                    <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
+                                        <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                                            <div class="flex-auto p-4">
+                                                <div class="flex flex-wrap">
+                                                    <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                                        <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                                            Number of trips
+                                                        </h5>
+                                                        <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-auto">
+                                                    <!-- Trip Info -->
+                                                    <div class="relative h-fit">
+                                                        <div class="flex flex-row py-4">
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_1h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last hour</p>
+                                                            </div>
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_8h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last 8 hours</p>
+                                                            </div>
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_24h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last day</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
