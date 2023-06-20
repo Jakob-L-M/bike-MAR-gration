@@ -31,8 +31,11 @@ app.get('/assets/*', (req, res) => {
 
 app.get('/api/trips_since', async function (req, res) {
     console.log('db request', req.url)
-    let n = await db_functions.get_number_of_trips(DB_CONNECTION, 20)
-    res.send([n]) // list so its not interpreted as status
+    var result = []
+    result.push(await db_functions.get_number_of_trips(DB_CONNECTION, 20)) //1h
+    result.push(await db_functions.get_number_of_trips(DB_CONNECTION, 160)) //8h
+    result.push(await db_functions.get_number_of_trips(DB_CONNECTION, 480)) //24h
+    res.send(result) // list so its not interpreted as status
 })
 
 app.get('/api/stations', async function (req, res) {

@@ -5,23 +5,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <link rel="shortcut icon" href="./assets/img/favicon.ico" />
+    <link rel="icon" href="/assets/img/favicon.ico" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/creativetimofficial/tailwind-starter-kit/compiled-tailwind.min.css" />
+
+    <!-- Tailwind -->
+    <link rel="stylesheet" href="/assets/css/tw.css" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
 
-    <script src="/assets/utils.js"></script>
-    <script src="/assets/graph.js" defer></script>
-    <script src="/assets/map.js" defer></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/graph.js" defer></script>
+    <script src="/assets/js/map.js" defer></script>
 
     <title>Bike-MAR-Gration</title>
 </head>
@@ -29,7 +31,7 @@
 <body class="text-blueGray-700 antialiased">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
-        <nav class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
+        <nav class="z-20 md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
             <div class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto">
                 <button class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent" type="button" onclick="toggleNavbar('example-collapse-sidebar')">
                     <i class="fas fa-bars"></i></button>
@@ -43,15 +45,21 @@
                             <div class="items-center flex">
                                 <span class="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"><img
                                         alt="..." class="w-full rounded-full align-middle border-none shadow-lg"
-                                        src="./assets/img/team-1-800x800.jpg" /></span>
+                                        src="/assets/img/qm.png" /></span>
                             </div>
                         </a>
                         <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1" style="min-width: 12rem;" id="user-responsive-dropdown">
 
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Code</a><a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Documentation</a>
+                            <a href="https://github.com/Jakob-L-M/bike-MAR-gration" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                                Code & Documentation
+                            </a>
+                            
                             <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">Bela</a>
-                            <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                            
+                            <a href="#bela" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                                Bela
+                            </a>
+                            <a href="https://jakob-l-m.de" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
                                 Jakob
                             </a>
                         </div>
@@ -72,53 +80,110 @@
                             </div>
                         </div>
                     </div>
-                    <ul class="md:flex-col md:min-w-full flex flex-col list-none">
+                    <ul class="z-20 md:flex-col md:min-w-full flex flex-col list-none">
                         <li class="items-center">
-                            <a class="text-orange-500 hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/dashboard"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('map_view')"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
                                 Map View</a>
                         </li>
                         <li class="items-center">
-                            <a class="text-blueGray-700 hover:text-orange-600 text-xs uppercase py-3 font-bold block" href="#/landing"><i class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
-                                Historic Analysis</a>
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('live_analytics', 'main')"><i class="fas fa-chart-line opacity-75 mr-2 text-sm"></i>
+                                Live Analytics</a>
                         </li>
                         <li class="items-center">
-                            <a class="text-blueGray-300 text-xs uppercase py-3 font-bold block" href="#pablo"><i
-                                    class="fas fa-tools text-blueGray-300 mr-2 text-sm"></i>
-                                Event-Based Analysis (soon)</a>
+                            <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('live_analytics', 'main')"><i class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
+                                Historic Analysis</a>
                         </li>
                     </ul>
 
                 </div>
             </div>
         </nav>
-        <div class="relative md:ml-64 bg-blueGray-50">
+        <div class="relative md:ml-64 h-full">
+            <div class="px-4 md:px-10 mx-auto w-full h-full">
+                <div id="main" class="pt-6">
+                    <!-- Map view -->
+                    <div id="map-predictions" class="flex flex-wrap map_view hidden bg-indigo-600 pb-32 pt-12">
+                        <div class="w-full xl:w-6/12 px-4">
+                            <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
+                                <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
+                                    <div class="flex flex-wrap items-center">
+                                        <div class="relative w-full max-w-full flex-grow flex-1">
+                                            <h6 class="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
+                                                Map View
+                                            </h6>
+                                            <h2 class="text-black text-xl font-semibold">
+                                                NextBikes in Marburg
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 flex-auto">
+                                    <div class="relative chart" style="z-index: 0;" id="map">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Header -->
-            <div class="relative bg-orange-600 pb-32 pt-12">
-                <div class="px-4 md:px-10 mx-auto w-full">
-                    <div>
-                        <!-- Card stats -->
-                        <div class="flex flex-wrap">
-                            <div class="w-full lg:w-12/12 xl:w-12/12 px-4">
-                                <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
-                                    <div class="flex-auto p-4">
-                                        <div class="flex flex-wrap">
-                                            <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
-                                                <h5 class="text-blueGray-400 uppercase font-bold text-xs">
-                                                    Bikes currently rented
-                                                </h5>
-                                                <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
-                                            </div>
-                                            <div class="relative w-auto pl-4 flex-initial">
-                                                <div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-blue-500">
-                                                    <i class="far fa-chart-bar"></i>
+                    <!-- Live Analytics-->
+                    <div class="relative pb-32 pt-12 live_analytics hidden">
+                        <div class="px-4 md:px-10 mx-auto w-full">
+                            <div>
+                                <!-- Rental history -->
+                                <div class="flex flex-wrap">
+                                    <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
+                                        <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                                            <div class="flex-auto p-4">
+                                                <div class="flex flex-wrap">
+                                                    <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                                        <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                                            Bikes currently rented
+                                                        </h5>
+                                                        <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="p-4 flex-auto">
+                                                    <!-- Rented bikes chart -->
+                                                    <div class="relative" style="height:150px">
+                                                        <canvas id="rented-chart"></canvas>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="p-4 flex-auto">
-                                            <!-- Chart -->
-                                            <div class="relative" style="height:150px">
-                                                <canvas id="rented-chart"></canvas>
+                                    </div>
+                                </div>
+                                <!-- Trip Stats -->
+                                <div class="flex flex-wrap">
+                                    <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
+                                        <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                                            <div class="flex-auto p-4">
+                                                <div class="flex flex-wrap">
+                                                    <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                                        <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                                            Number of trips
+                                                        </h5>
+                                                        <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-auto">
+                                                    <!-- Trip Info -->
+                                                    <div class="relative h-fit">
+                                                        <div class="flex flex-row py-4">
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_1h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last hour</p>
+                                                            </div>
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_8h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last 8 hours</p>
+                                                            </div>
+                                                            <div class="flex-1" style="text-align: center;">
+                                                                <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_24h">?</h3>
+                                                                <p class="text-blueGray-400 uppercase text-xs">Last day</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -127,53 +192,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="px-4 md:px-10 mx-auto w-full -m-24">
-                <div id="map-predictions" class="flex flex-wrap">
-                    <div class="w-full xl:w-6/12 px-4">
-                        <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
-                            <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
-                                <div class="flex flex-wrap items-center">
-                                    <div class="relative w-full max-w-full flex-grow flex-1">
-                                        <h6 class="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
-                                            Map View
-                                        </h6>
-                                        <h2 class="text-black text-xl font-semibold">
-                                            NextBikes in Marburg
-                                        </h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-4 flex-auto">
-                                <div class="relative chart" id="map">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-full xl:w-6/12 mb-12 xl:mb-0 px-4 station-pred">
-                        <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-800">
-                            <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
-                                <div class="flex flex-wrap items-center">
-                                    <div class="relative w-full max-w-full flex-grow flex-1">
-                                        <h6 class="uppercase text-blueGray-100 mb-1 text-xs font-semibold">
-                                            Station Prediction
-                                        </h6>
-                                        <h2 class="text-white text-xl font-semibold">
-                                            Erlenring
-                                        </h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-4 flex-auto">
-                                <!-- Chart -->
-                                <div class="relative chart">
-                                    <canvas id="line-chart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <footer class="block py-4">
+                <footer class="static py-4 bottom-0">
                     <div class="container mx-auto px-4" style="max-width: 50%;">
                         <hr class="mb-4 border-b-1 border-blueGray-200" />
                         <div class="flex flex-wrap items-center justify-center">
@@ -202,6 +221,7 @@
             </div>
         </div>
     </div>
+    <script src="assets/js/ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" charset="utf-8"></script>
     <script src="https://unpkg.com/@popperjs/core@2.9.1/dist/umd/popper.min.js" charset="utf-8"></script>
     <script type="text/javascript">
