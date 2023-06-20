@@ -1,0 +1,20 @@
+on: push
+
+name: Deploy to server
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.1.0
+      with:
+        fetch-depth: 2
+      
+    - name: Upload Files to FTP-Serer
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_NAME }}
+        password: ${{ secrets.FTP_PASS }}
+        server-dir: ./
+        local-dir: ./web-showcase/
