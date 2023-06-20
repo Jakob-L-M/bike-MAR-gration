@@ -178,11 +178,14 @@ def toInputFormat(dataframe, timeID):
     return np.array(input)
 
 def toOutputFormat(dataframe, timeID):
-    row = findRow(timeID+5, dataframe)
-    if (row == -1):
+    row15 = findRow(timeID+5, dataframe)
+    row30 = findRow(timeID+10, dataframe)
+    row45 = findRow(timeID+15, dataframe)
+    row60 = findRow(timeID+20, dataframe)
+    if (row15 == -1 or row30 == -1 or row45 == -1 or row60 == -1):
         return None
     else:
-        return dataframe["nrBikes"][row]
+        return np.array([dataframe["nrBikes"][row15], dataframe["nrBikes"][row30], dataframe["nrBikes"][row45], dataframe["nrBikes"][row60]])
 
 
 def readData():
@@ -198,7 +201,7 @@ def readData():
 #build model using tensorflow
 def build_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(19, activation='relu', input_shape=[199]),
+        tf.keras.layers.Dense(19, activation='relu', input_shape=[19]),
         tf.keras.layers.Dense(15, activation='relu'),
         tf.keras.layers.Dense(4) #output: t+15,t+30,t+45,t+60
     ])
@@ -210,7 +213,6 @@ def build_model():
                 metrics=['mae', 'mse'])
     return model
 
-#build train and test data
 def build_train_test_data():
     print("reading data to dataframes...")
     dataframes = readData()
@@ -256,7 +258,6 @@ def build_train_test_data():
     print("data build & save complete")
     return True
 
-#build_train_test_data()
 
 def load_train_test_data():
     path_to_train_test_data = r"C:/Users/belas/OneDrive/Documents/UNI/Semester 4/Datenintegration/bike-Mar-gration/data/train_test_data/"
@@ -268,12 +269,12 @@ def load_train_test_data():
         test_X = pickle.load(f)
     with open(path_to_train_test_data+"test_data_y.pickle", "rb") as f:
         test_Y = pickle.load(f)
+    #return train_X, train_Y, test_X, test_Y
     return np.array(train_X, dtype=np.float32), np.array(train_Y, dtype=np.float32), np.array(test_X, dtype=np.float32), np.array(test_Y, dtype=np.float32)
 
 def init_and_save_model():
     model = build_model()
     model.save("models/model01.h5")
-init_and_save_model()
 
 def load_model_and_train():
     print("Loading model...")
@@ -281,10 +282,6 @@ def load_model_and_train():
     model = tf.keras.models.load_model("models/"+model_name)
     print("loading data...")
     train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()
-    train_data_x = tf.convert_to_tensor(train_data_x)
-    train_data_y = tf.convert_to_tensor(train_data_y)
-    test_data_x = tf.convert_to_tensor(test_data_x)
-    test_data_y = tf.convert_to_tensor(test_data_y)
     #train model
     print("Training model...")
     model.fit(train_data_x, train_data_y, epochs=10)
@@ -298,7 +295,20 @@ def load_model_and_train():
     print("Saving model...")
     model.save("models/model01.h5")
 
+def calc_baseline():
+    print("loading data...")
+    train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()0,,
 
-load_model_and_train()
 
+    #predict same value as t
+    print("Calculating baseline...")
+    MSE = 0
+    for i in range(len(test_data_x)):
+        for j in range(len(test_data_y[0])):
+            MSE += (test_data_x[i][2] - test_data_y[i][j])**2
 
+    MSE = MSE / len(test_data_x)
+
+    print("Baseline MSE: " + str(MSE))
+
+calc_baseline()
