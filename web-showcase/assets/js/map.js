@@ -19,8 +19,7 @@ function update_stations() {
         stations = data
 
         for (let station of data) {
-            let m = L.marker([station.lat, station.lon])
-            m.bindTooltip(`${station.n}`, { permanent: true, offset: [0, 0], clickable: false });
+            let m = L.marker([station.lat, station.lon], {'icon': icons[Math.min(station.n, 10)]})
             m.addTo(stationMarkers)
         }
         setTimeout(update_stations, 60000); // update every minute to ensure up-to-date data
@@ -30,7 +29,7 @@ function update_stations() {
     update_trip_info()
     
 }
-
+console.log(icons)
 update_stations()
 
 map.on('click', function(e) {

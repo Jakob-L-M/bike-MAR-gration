@@ -109,14 +109,14 @@ display_rented_info()
 function create_station_prediction(name) {
     $('#map-predictions').append(`
     <div class="w-full xl:w-6/12 mb-12 xl:mb-0 px-4 station-pred">
-        <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-800">
+        <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-white">
             <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
                 <div class="flex flex-wrap items-center">
                     <div class="relative w-full max-w-full flex-grow flex-1">
                         <h6 class="uppercase text-blueGray-100 mb-1 text-xs font-semibold">
                             Station Prediction
                         </h6>
-                        <h2 class="text-white text-xl font-semibold">
+                        <h2 class="text-blueGray-100 text-xl font-semibold">
                             ${name}
                         </h2>
                     </div>
