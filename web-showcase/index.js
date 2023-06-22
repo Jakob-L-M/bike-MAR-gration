@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const fetch = (...args) =>
-    import('node-fetch').then(({ default: fetch }) => fetch(...args));
+    import ('node-fetch').then(({ default: fetch }) => fetch(...args));
 var mysql = require('mysql');
 const db_functions = require('./db')
 
@@ -29,7 +29,7 @@ app.get('/assets/*', (req, res) => {
     res.sendFile(__dirname + req.url);
 });
 
-app.get('/api/trips_since', async function (req, res) {
+app.get('/api/trips_since', async function(req, res) {
     console.log('db request', req.url)
     var result = []
     result.push(await db_functions.get_number_of_trips(DB_CONNECTION, 20)) //1h
@@ -38,7 +38,7 @@ app.get('/api/trips_since', async function (req, res) {
     res.send(result) // list so its not interpreted as status
 })
 
-app.get('/api/stations', async function (req, res) {
+app.get('/api/stations', async function(req, res) {
     console.log('db request', req.url)
     let timestamp = Date.now()
 
@@ -50,14 +50,14 @@ app.get('/api/stations', async function (req, res) {
 
     for (let s of t) {
         // only stations that still exist
-        result.push({ 'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': s.n })
+        result.push({ 'name': s.name, 'lat': s.latitude, 'lon': s.longitude, 'n': s.n, 'id': s.id})
     }
     res.send(result)
 
 
 })
 
-app.get('/api/rented_info', async function (req, res) {
+app.get('/api/rented_info', async function(req, res) {
     console.log('db request', req.url)
     let timestamp = Date.now()
     let timeId = Math.floor(timestamp / (180 * 1000))
@@ -72,8 +72,23 @@ app.get('/api/rented_info', async function (req, res) {
     res.send([timeId, total, result])
 })
 
+app.get('/api/station_history', async function(req, res) {
+    console.log('db request', req.url, req.query)
+    let timestamp = Date.now()
+    let timeId = Math.floor(timestamp / (180 * 1000))
 
-app.get(`/${conf.SCRAPE_TRIGGER}`, async (req, res) => {
+    let stationId = Number(req.query.stationId)
+    if (!isNaN(stationId)) {
+        res.send(await db_functions.get_station_history(timeId, stationId, DB_CONNECTION))
+    } else {
+        res.send(null)
+        console.log('invalid station id')
+    }
+
+})
+
+
+app.get(`/${conf.SCRAPE_TRIGGER}`, async(req, res) => {
     console.log('Start Scraping')
     let timestamp = Date.now()
 
@@ -101,7 +116,7 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, async (req, res) => {
     try {
         await fetch(`https://maps.nextbike.net/maps/nextbike-live.json?city=438&domains=nm&list_cities=0&bikes=0`, scrapeSettings)
             .then(res => res.json())
-            .then(async (json) => {
+            .then(async(json) => {
                 let stations = json.countries[0].cities[0].places
                 for (let station of stations) {
 
@@ -133,8 +148,7 @@ app.get(`/${conf.SCRAPE_TRIGGER}`, async (req, res) => {
                     }
 
                 }
-            }
-            )
+            })
     } catch (e) {
         console.log(e)
     }
@@ -192,4 +206,10 @@ function onListening() {
         'pipe ' + addr :
         'port ' + addr.port;
     console.log('Listening on ' + bind);
+}
+
+async() => {
+    let response = await pusher.devices();
+
+    console.log(response)
 }
