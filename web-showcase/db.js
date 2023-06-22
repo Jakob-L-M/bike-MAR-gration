@@ -1,5 +1,5 @@
 async function get_bike_distribution(timeId, DB) {
-    sql = `SELECT name, latitude, longitude, COALESCE(numBikes, 0) as n FROM (SELECT * FROM stations WHERE firstSeen <= ${timeId} AND lastSeen >= ${timeId}) s LEFT OUTER JOIN (SELECT stationId, COUNT(id) as numBikes from bikes WHERE timeId = ${timeId} GROUP BY stationId) b 
+    sql = `SELECT id, name, latitude, longitude, COALESCE(numBikes, 0) as n FROM (SELECT * FROM stations WHERE firstSeen <= ${timeId} AND lastSeen >= ${timeId}) s LEFT OUTER JOIN (SELECT stationId, COUNT(id) as numBikes from bikes WHERE timeId = ${timeId} GROUP BY stationId) b 
     ON s.id = b.stationId;`
 
     return await (new Promise((res, rej) => {
@@ -17,6 +17,23 @@ async function get_bike_distribution(timeId, DB) {
 
 async function get_rented_bike_info(timeId, DB) {
     sql = `SELECT timeId, COUNT(DISTINCT id) as numBikes FROM bikes WHERE timeId BETWEEN ${timeId - 29} AND ${timeId} GROUP BY timeId`
+
+    return await (new Promise((res, rej) => {
+        DB.query(sql, (err, result) => {
+            if (err) {
+                console.log(err)
+                rej(err)
+            } else {
+                res(result)
+            }
+        })
+
+    }))
+}
+
+async function get_station_history(timeId, stationId, DB) {
+    sql = `SELECT t.timeId, COALESCE(b.n, 0) as n FROM (SELECT id FROM stations WHERE id = ${stationId}) s CROSS JOIN (SELECT DISTINCT timeId FROM bikes WHERE timeId > ${timeId-480}) t LEFT JOIN 
+    (SELECT timeId, COUNT(id) AS n FROM bikes WHERE timeId > ${timeId-480} AND stationId = ${stationId} GROUP BY timeId) b ON t.timeId = b.timeId ORDER BY t.timeId DESC`
 
     return await (new Promise((res, rej) => {
         DB.query(sql, (err, result) => {
@@ -156,5 +173,6 @@ module.exports = {
     get_rented_bike_info,
     get_num_bikes,
     get_number_of_trips,
-    update_trips
+    update_trips,
+    get_station_history
 }
