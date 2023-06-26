@@ -3,7 +3,6 @@ import pandas as pd
 from tqdm.auto import tqdm
 from dotenv import load_dotenv
 import os
-import json
 from glob import glob
 
 load_dotenv('../.env')
@@ -64,7 +63,7 @@ def update_data():
                 FROM
                     bikes
                 WHERE
-                    timeId > {last_known} -- last_known timeId
+                    timeId > {last_known - 40} -- last_known timeId, -40 since thats the furthers away join (2h) we perform
                     AND timeId BETWEEN {first_seen} -- firstSeen
                     AND {last_seen} -- lastSeen
             ) b
@@ -146,12 +145,15 @@ def update_data():
 
 def get_data():
     dfs = []
-    
+    print('Getting data ready...', end='', sep='', flush=True)
     # iterate over all station files and append output
     for file in glob(DATA_DIR + '*.pickle') :
         dfs.append(pd.read_pickle(file))
+        # break # for testing just load one station
     
+    print('\b\b\b ✔ ', flush=True)
     return pd.concat(dfs)
 
 
-update_data()
+if __name__ == '__main__':
+    update_data()
