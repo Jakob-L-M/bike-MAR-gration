@@ -1,40 +1,31 @@
-import tensorflow as tf
+from ML_Predictor import build_train_test_data, build_model
 import numpy as np
-from sklearn.model_selection import train_test_split
 
-from load_data_locally import get_data
+from datetime import datetime as dt
+from dateutil import tz
 
-def init_model(path):
 
-    print('💾 loading model...')
-    model = tf.keras.models.load_model(path)
 
-    # Show the model architecture
-    # print(model.summary())
-
-    return model
-
-def get_test_data(start_time, end_time, seed, test_size):
-    print('🔨 building test data...')
-
-    df = get_data()
-    df = df[(df['timeId'] >= start_time) & (df['timeId'] <= end_time)]
-
-    _, X, _, y = train_test_split(df, test_size=test_size, seed=seed)
-
-    return X, y
 
 def make_analysis_heatmap(X, y_diff, feature1, feature2, buckets1=None, buckets2=None):
     # heatmap where one axis is feature1 and the other feature2
     # The squares of the map display the |log2(1 + y) - log2(1 + y_pred)|^2
     # If a feature is numeric 10% quantiles will be used as steps
     # Labels should include quantile and value info
+    print(X[feature1].unique())
+    print(X[feature2].unique())
+
     return 0
 
 
 
-model = init_model('models/model01.h5')
-X, y = get_test_data(0, 9312890, 1234, 0.2)
-y_pred = model.predict(X[:-4])
-y_diff = y - y_pred
+model = build_model('log_loss')
+_, X, _, y, _, meta = build_train_test_data()
+y_pred = model.predict(X)
+
+meta['hour'] = meta['timeId'].apply(lambda x: dt.fromtimestamp(x*180, tz=tz.gettz('Europe / Berlin')).hour)
+
+y_diff = np.round(y - y_pred)
+
+make_analysis_heatmap(meta, y_diff, 'hour', 'description')
 
