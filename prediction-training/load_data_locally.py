@@ -117,15 +117,15 @@ def update_data():
             -- bX: before X timeIds
             -- aX: after X timeIds
             -- No outer join to exclude missing data
-            JOIN main b2  ON main.timeId = b2.timeId - 2
-            JOIN main b5  ON main.timeId = b5.timeId - 5
-            JOIN main b10 ON main.timeId = b10.timeId - 10
-            JOIN main b20 ON main.timeId = b20.timeId - 20
-            JOIN main b40 ON main.timeId = b40.timeId - 40
-            JOIN main a5  ON main.timeId = a5.timeId + 5
-            JOIN main a10 ON main.timeId = a10.timeId + 10
-            JOIN main a15 ON main.timeId = a15.timeId + 15
-            JOIN main a20 ON main.timeId = a20.timeId + 20
+            JOIN main b2  ON main.timeId = b2.timeId + 2
+            JOIN main b5  ON main.timeId = b5.timeId + 5
+            JOIN main b10 ON main.timeId = b10.timeId + 10
+            JOIN main b20 ON main.timeId = b20.timeId + 20
+            JOIN main b40 ON main.timeId = b40.timeId + 40
+            JOIN main a5  ON main.timeId = a5.timeId - 5
+            JOIN main a10 ON main.timeId = a10.timeId - 10
+            JOIN main a15 ON main.timeId = a15.timeId - 15
+            JOIN main a20 ON main.timeId = a20.timeId - 20
         """
         cursor.execute(query)
         data = cursor.fetchall()

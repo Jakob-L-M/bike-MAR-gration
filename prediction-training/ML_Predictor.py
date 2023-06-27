@@ -15,30 +15,6 @@ from load_data_locally import get_data
 DATA_DIR = '../data/bikes_at_station/'
 MODEL_DIR = './models/'
 
-def findRow(timeID, df, allowedError=0):
-    #binary search for timeID
-    left = 0
-    right = len(df)-1
-    while (left < right):
-        mid = (left + right) // 2
-        if (df["timeID"][mid] == timeID):
-            return mid
-        elif (df["timeID"][mid] < timeID):
-            left = mid + 1
-        else:
-            right = mid
-    if (abs(df["timeID"][left] - timeID) < allowedError):
-        return left
-    else:
-        return -1
-
-
-
-def min_max_norm(column_values):
-    mMs = MinMaxScaler()
-    mMs.fit([column_values])
-    return mMs.transform([column_values])[0]
-
 def description_to_numeric(description):
     possibilities = [#rain descriptions from data, sort by intensity
         "Sunny",
@@ -135,12 +111,12 @@ def transform_input(df: pd.DataFrame):
     print('Transforming input data...', end='', sep='', flush=True)
 
     # latitude
-    df['lat'] = min_max_norm(df['latitude'].values)
-    df['lat'] = df['lat'].apply(lambda x: x + 0.0002*random.random() - 0.0002)
+    # df['lat'] = min_max_norm(df['latitude'].values)
+    df['lat'] = df['latitude'].apply(lambda x: float(x) + 0.001*random.random() - 0.001)
 
     # longitude
-    df['long'] = min_max_norm(df['longitude'].values)
-    df['long'] = df['long'].apply(lambda x: x + 0.0002*random.random() - 0.0002)
+    # df['long'] = min_max_norm(df['longitude'].values)
+    df['long'] = df['longitude'].apply(lambda x: float(x) + 0.001*random.random() - 0.001)
 
     
     # weather description (parsed & normalised)
@@ -159,7 +135,7 @@ def transform_input(df: pd.DataFrame):
 
     return df[[ # X
         'weekday_0', 'weekday_1', 'weekday_2', 'timeX',
-       'timeY', 'latitude', 'longitude', 'temp',
+       'timeY', 'lat', 'long', 'temp',
        'feelsLikeTemp', 'desc_numeric', 'cloud', 'wind',
        'gust', 'event_type', 'nBikes', 't-6', 
        't-15', 't-30', 't-60', 't-120'
@@ -179,12 +155,13 @@ def build_model(name = '', load=True):
     else:
         model = tf.keras.Sequential([
             tf.keras.layers.Dense(20, activation='relu', input_shape=[20]),
-            tf.keras.layers.Dense(40, activation='relu'),
+            tf.keras.layers.Dense(20, activation='relu'),
+            tf.keras.layers.Dense(20, activation='relu'),
             tf.keras.layers.Dense(4) #output: t+15,t+30,t+45,t+60
         ])
 
         model.compile(loss='mean_squared_logarithmic_error',
-                    optimizer=tf.keras.optimizers.legacy.Adam(), # using legacy due to M2 Mac
+                    optimizer=tf.keras.optimizers.Adam(), # using legacy due to M2 Mac
                     metrics=['mse', 'mae'])
     
     print('\b\b\b ✔ ', flush=True)
@@ -233,4 +210,5 @@ def load_model_and_train():
     model.save(MODEL_DIR + name)
 
 if __name__ == '__main__':
+    # print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
     load_model_and_train()
