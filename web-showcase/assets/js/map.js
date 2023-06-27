@@ -47,5 +47,6 @@ map.on('click', async (e) => {
     await new Promise(r => setTimeout(r, 400));
     for (let station of temp) {
         create_station_graphs(station.name, station.id)
+        console.log(predict(station.id))
     }
 });

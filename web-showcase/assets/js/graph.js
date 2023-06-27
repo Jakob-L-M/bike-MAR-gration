@@ -138,12 +138,10 @@ function create_station_div(name, id) {
 function create_station_graphs(name, id) {
     $.getJSON(`/api/station_history?stationId=${id}`, (data) => {
 
-        console.log(data)
-
         let l = []
         let v = []
 
-        for (let i = data.length-1; i >= 0; i -= 10) {
+        for (let i = data.length-1; i >= 0; i -= 1) {
             v.push(data[i].n)
             l.push(new Date((data[i].timeId * 180 - 60 * (new Date().getTimezoneOffset())) * 1000).toISOString().substring(11, 16))
         }
@@ -155,7 +153,6 @@ function create_station_graphs(name, id) {
             fill: false,
             spanGaps: true
         }
-        console.log(d, l, name, id)
 
         let temp = {...config}
         temp['data'] = {

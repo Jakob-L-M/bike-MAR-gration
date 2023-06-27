@@ -9,3 +9,5 @@ function meter_dist(lat1, lon1, lat2, lon2){  // generally used geo measurement 
     var d = R * c;
     return d * 1000; // meters
 }
+
+$.ajaxSetup({async:false});
