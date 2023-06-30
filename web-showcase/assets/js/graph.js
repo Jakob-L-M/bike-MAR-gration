@@ -142,12 +142,12 @@ function create_station_graphs(id) {
         let v = []
 
         let now = data[data.length - 1].timeId
-        let pointer = data.length - 1
+        let pointer = 0
 
         for (let i = now - 20; i <= now; i += 1) {
             if (data[pointer].timeId = i) {
-                v.push(data[i].n)
-                pointer -= 1
+                v.push(data[pointer].n)
+                pointer += 1
             } else {
                 v.push(NaN)
             }
