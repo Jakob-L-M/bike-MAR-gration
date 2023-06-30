@@ -74,7 +74,7 @@ async function get_prediction_data(timeId, stationId, DB) {
 
 async function get_station_history(timeId, stationId, DB) {
     sql = `SELECT t.timeId, COALESCE(b.n, 0) as n FROM (SELECT id FROM stations WHERE id = ${stationId}) s CROSS JOIN (SELECT DISTINCT timeId FROM bikes WHERE timeId > ${timeId-10}) t LEFT JOIN 
-    (SELECT timeId, COUNT(id) AS n FROM bikes WHERE timeId > ${timeId-10} AND stationId = ${stationId} GROUP BY timeId) b ON t.timeId = b.timeId ORDER BY t.timeId DESC`
+    (SELECT timeId, COUNT(id) AS n FROM bikes WHERE timeId > ${timeId-10} AND stationId = ${stationId} GROUP BY timeId) b ON t.timeId = b.timeId ORDER BY t.timeId`
 
     return await (new Promise((res, rej) => {
         DB.query(sql, (err, result) => {
