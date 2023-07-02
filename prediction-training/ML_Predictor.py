@@ -297,7 +297,7 @@ def load_model_and_train():
 
 def calc_baseline():
     print("loading data...")
-    train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()0,,
+    train_data_x, train_data_y, test_data_x, test_data_y = load_train_test_data()
 
 
     #predict same value as t
