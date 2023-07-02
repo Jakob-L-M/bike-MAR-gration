@@ -87,6 +87,21 @@ app.get('/api/station_history', async function(req, res) {
 
 })
 
+app.get('/api/prediction_data', async function(req, res) {
+    console.log('db request', req.url, req.query)
+    let timestamp = Date.now()
+    let timeId = Math.floor(timestamp / (180 * 1000))
+
+    let stationId = Number(req.query.stationId)
+    if (!isNaN(stationId)) {
+        res.send(await db_functions.get_prediction_data(timeId, stationId, DB_CONNECTION))
+    } else {
+        res.send(null)
+        console.log('invalid station id')
+    }
+
+})
+
 
 app.get(`/${conf.SCRAPE_TRIGGER}`, async(req, res) => {
     console.log('Start Scraping')

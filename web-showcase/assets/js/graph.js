@@ -71,7 +71,7 @@ function display_rented_info() {
         let timeId = data[0]
         let total = data[1]
         let values = data[2]
-            // label array
+        // label array
         let l = []
         let v = []
 
@@ -97,7 +97,7 @@ function display_rented_info() {
 
 
         let ctx = document.getElementById("rented-chart").getContext("2d");
-        let temp = {...config}
+        let temp = { ...config }
         temp['data'] = {
             labels: l,
             datasets: [d]
@@ -135,19 +135,41 @@ function create_station_div(name, id) {
     `)
 }
 
-function create_station_graphs(name, id) {
+function create_station_graphs(id) {
     $.getJSON(`/api/station_history?stationId=${id}`, (data) => {
-
-        console.log(data)
 
         let l = []
         let v = []
 
-        for (let i = data.length-1; i >= 0; i -= 10) {
-            v.push(data[i].n)
-            l.push(new Date((data[i].timeId * 180 - 60 * (new Date().getTimezoneOffset())) * 1000).toISOString().substring(11, 16))
+        let now = data[data.length - 1].timeId
+        let pointer = 0
+
+        for (let i = now - 10; i <= now; i += 1) {
+            if (data[pointer].timeId == i) {
+                v.push(data[pointer].n)
+                pointer += 1
+            } else {
+                v.push(NaN)
+            }
+            if ((now-i) % 5 == 0) {
+                l.push(`-${(now-i)*3}min`)
+            } else {
+                l.push('')
+            }
         }
         l[l.length - 1] = 'now'
+        let pred = predict(id)
+        for (let j = 0; j < 4; j++) {
+            for (let i = 0; i < 4; i++) {
+                v.push(NaN)
+                l.push('')
+            }
+            v.push(pred[j])
+            l.push(`+${(j+1)*15}min`)
+        }
+
+        console.log(v, l)
+
         let d = {
             backgroundColor: "#ea580c",
             borderColor: "#ea580c",
@@ -155,9 +177,8 @@ function create_station_graphs(name, id) {
             fill: false,
             spanGaps: true
         }
-        console.log(d, l, name, id)
 
-        let temp = {...config}
+        let temp = { ...config }
         temp['data'] = {
             labels: l,
             datasets: [d]

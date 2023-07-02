@@ -22,5 +22,10 @@ This data integration project has four components: preparation, data integration
 
 ## Documentation
 
-All code documentation and instructions should be placed in this `README.md`;
-feel free to erase this intro text.
+### Using the trained model in production
+We use the tensorflowjs python library to converted the trained model for web usage. See the [official tutorial](https://www.tensorflow.org/js/tutorials/conversion/import_saved_model). For us, a clean python 3.11.4 was used
+
+Command for conversion, execute in a shell an root level
+```
+tensorflowjs_converter ./prediction-training/models/MODEL-NAME ./web-showcase/assets/model --input_format=tf_saved_model --output_node_names=web-model
+```
