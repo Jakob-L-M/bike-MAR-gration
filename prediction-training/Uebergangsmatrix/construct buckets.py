@@ -89,6 +89,8 @@ def set_metadata():
 
 
 def get_Bucket_identifier(trip):
+    if (maxTemp is None):
+        set_metadata()
     temp = round(((trip[3] - minTemp) / (maxTemp - minTemp)) * start_grain)
     cloud = round(((trip[5] - minCloud) / (maxCloud - minCloud)) * start_grain)
     wind = round(((trip[6] - minWind) / (maxWind - minWind)) * start_grain)
@@ -358,11 +360,11 @@ def decription_to_numeric(description):
 
 
 
-print("Starting merge algo...")
-#calculated_buckets = run_merge()
-print("Merge algo finished")
-print("Saving buckets...")
-#with open(DATA_DIR+'buckets.pickle', 'wb') as handle:
+# print("Starting merge algo...")
+# calculated_buckets = run_merge()
+# print("Merge algo finished")
+# print("Saving buckets...")
+# with open(DATA_DIR+'buckets.pickle', 'wb') as handle:
 #    pickle.dump(calculated_buckets, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def load_buckets():
@@ -372,6 +374,11 @@ def load_buckets():
 
 def load_normalized_buckets():
     with open(DATA_DIR+'normalized_buckets.pickle', 'rb') as handle:
+        buckets = pickle.load(handle)
+    return buckets
+
+def load_adjusted_buckets():
+    with open(DATA_DIR+'adjusted_buckets.pickle', 'rb') as handle:
         buckets = pickle.load(handle)
     return buckets
 
@@ -422,6 +429,7 @@ def adjust_by_stationlifetime():
     normalized_buckets = load_normalized_buckets()
     mydb = get_DB()
     mydb_cursor = mydb.cursor()
+    print("get scale data from database...")
     querry = "SELECT MIN(startTime), MAX(endTime ) FROM trips"
     mydb_cursor.execute(querry)
     result = mydb_cursor.fetchall()
@@ -435,15 +443,48 @@ def adjust_by_stationlifetime():
     for station_first_last in result:
         relative_station_lifetime.append((station_first_last[2]-station_first_last[1])/(max_end_time-min_start_time))
     adjusted_buckets = {}
+    print("Update matrices...")
     for key, value in tqdm(normalized_buckets.items()):
         for i in range(value.shape[0]):
             for j in range(value.shape[1]):
-                value[i][j] = value[i][j] * 1/relative_station_lifetime[i] * 1/relative_station_lifetime[j]
+                value[i][j] = value[i][j] * min(1/relative_station_lifetime[i], 1/relative_station_lifetime[j])
         adjusted_buckets[key] = value
+    print("Save new buckets")
     with open(DATA_DIR+'adjusted_buckets.pickle', 'wb') as handle:
         pickle.dump(adjusted_buckets, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+def get_matrix_by_timeId(timeId):
+    mydb = get_DB()
+    mydb_cursor = mydb.cursor()
+    querry = "SELECT null ,null ,null, w.temp, w.description, w.cloud, w.wind , w.gust " +\
+                "FROM weather w " +\
+                "WHERE w.timeId = " + str(timeId)
+    mydb_cursor.execute(querry)
+    result = mydb_cursor.fetchall()
+    if (len(result) == 0):
+        print("No weather data for timeId: " + str(timeId))
+        querry = "SELECT w.timeId ,null ,null, w.temp, w.description, w.cloud, w.wind , w.gust " +\
+                "FROM weather w " +\
+                "WHERE ABS(w.timeId - " + str(timeId) + ") = (SELECT MIN(ABS(w2.timeId - " + str(timeId) + ")) FROM weather w2)"
+        mydb_cursor.execute(querry)
+        result = mydb_cursor.fetchall()
+        print("Closest timeId: " + str(result[0][0]))
+
+    buckets = load_adjusted_buckets()
+    identifier_list = get_Bucket_identifier(result[0])
+    key = bucket_id_to_string(identifier_list)
+    if (key in buckets):
+        return buckets[key]
+    else:
+        return None #0-matrix
+
+
+
+
 #normalize_weather_buckets()
 
-adjust_by_stationlifetime()
+# adjust_by_stationlifetime()
+
+matrix = get_matrix_by_timeId(124423)
+print(matrix)
