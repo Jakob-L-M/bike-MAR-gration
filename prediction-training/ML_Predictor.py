@@ -90,8 +90,8 @@ def getXY(timeID):
 
 #Model architecture: 15*15*24
 #input Layer: 15 nodes:
-# 1 : latitude (normalised)
-# 2 : longitude (normalised)
+# 1 : latitude (normalized)
+# 2 : longitude (normalized)
 # 3 : number of bikes at station t = 0
 # 4 : number of bikes at station t = -6
 # 5 : number of bikes at station t = -15
@@ -99,7 +99,7 @@ def getXY(timeID):
 # 7 : number of bikes at station t = -120
 # 8 : weather temp
 # 9 : weather feelsLikeTemp
-# 10 : weather description (parsed & normalised)
+# 10 : weather description (parsed & normalized)
 # 11 : weather cloud
 # 12 : weather wind
 # 13 : weather gust
@@ -119,7 +119,7 @@ def transform_input(df: pd.DataFrame):
     df['long'] = df['longitude'].apply(lambda x: float(x) + 0.001*random.random() - 0.001)
 
     
-    # weather description (parsed & normalised)
+    # weather description (parsed & normalized)
     df['desc_numeric'] = df['description'].apply(lambda x: description_to_numeric(x))
     
     # 3 bit weekday array
