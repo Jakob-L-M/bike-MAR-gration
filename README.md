@@ -22,6 +22,21 @@ This data integration project has four components: preparation, data integration
 
 ## Documentation
 
+### Running the dev version locally
+First init node.js
+```
+cd web-showcase
+npm install
+```
+Then start the tailwind watcher and node server
+```
+npx tailwindcss -i ./input.css -o ./assets/css/tw.css --watch
+```
+```
+npm run dev
+```
+This will start a server listening on localhost:3000 which auto updates/restarts on changes
+
 ### Using the trained model in production
 We use the tensorflowjs python library to converted the trained model for web usage. See the [official tutorial](https://www.tensorflow.org/js/tutorials/conversion/import_saved_model). For us, a clean python 3.11.4 was used
 
