@@ -1077,6 +1077,14 @@ video {
   height: 100vh;
 }
 
+.h-64 {
+  height: 16rem;
+}
+
+.h-96 {
+  height: 24rem;
+}
+
 .max-h-\[calc\(100\%-64px\)\] {
   max-height: calc(100% - 64px);
 }
@@ -1244,6 +1252,10 @@ video {
 
 .w-1\/4 {
   width: 25%;
+}
+
+.w-96 {
+  width: 24rem;
 }
 
 .min-w-0 {

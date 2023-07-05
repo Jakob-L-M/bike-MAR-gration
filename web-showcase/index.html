@@ -30,6 +30,7 @@
     <script src="/assets/js/prediction.js"></script>
     <script src="/assets/js/graph.js" defer></script>
     <script src="/assets/js/map.js" defer></script>
+    <script src="/assets/js/trips.js" defer></script>
 
     <title>Bike-MAR-Gration</title>
 </head>
@@ -260,11 +261,14 @@
                                             <label data-te-select-label-ref>Result Size</label>
                                         </div>
                                         <div class="w-fit w-max-2/12 py-4 mr-0">
-                                            <button type="button" class="inline-block rounded bg-orange-400 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-orange-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]" id="tripBtn">
+                                            <button onclick="update_trip_details()" type="button" class="inline-block rounded bg-orange-400 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-orange-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]" id="tripBtn">
                                                 Execute
                                             </button>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="relative chart h-96 w-full" id="tripMap">
+                                    
                                 </div>
                             </div>
                         </div>
