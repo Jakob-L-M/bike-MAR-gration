@@ -8,14 +8,17 @@
     <link rel="icon" href="/assets/img/favicon.ico" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Tailwind -->
     <link rel="stylesheet" href="/assets/css/tw.css" />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"> </script>
@@ -33,67 +36,87 @@
 
 <body class="text-blueGray-700 antialiased min-h-screen bg-zinc-200">
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <nav class="z-20 md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
-        <div class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto">
-            <button class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent" type="button" onclick="toggleNavbar('example-collapse-sidebar')">
-                    <i class="fas fa-bars"></i></button>
-            <p class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0">
+    <nav
+        class="z-20 md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
+        <div
+            class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto">
+            <button
+                class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+                type="button" onclick="toggleNavbar('example-collapse-sidebar')">
+                <i class="fas fa-bars"></i></button>
+            <p
+                class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0">
                 BIKE-MAR-GRATION
             </p>
 
             <ul class="md:hidden items-center flex flex-wrap list-none">
                 <li class="inline-block relative">
-                    <a class="text-blueGray-500 block" href="#pablo" onclick="openDropdown(event,'user-responsive-dropdown')">
+                    <a class="text-blueGray-500 block" href="#pablo"
+                        onclick="openDropdown(event,'user-responsive-dropdown')">
                         <div class="items-center flex">
-                            <span class="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"><img
-                                        alt="..." class="w-full rounded-full align-middle border-none shadow-lg"
-                                        src="/assets/img/qm.png" /></span>
+                            <span
+                                class="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"><img
+                                    alt="..." class="w-full rounded-full align-middle border-none shadow-lg"
+                                    src="/assets/img/qm.png" /></span>
                         </div>
                     </a>
-                    <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1" style="min-width: 12rem;" id="user-responsive-dropdown">
+                    <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                        style="min-width: 12rem;" id="user-responsive-dropdown">
 
-                        <a href="https://github.com/Jakob-L-M/bike-MAR-gration" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
-                                Code & Documentation
-                            </a>
+                        <a href="https://github.com/Jakob-L-M/bike-MAR-gration"
+                            class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                            Code & Documentation
+                        </a>
 
                         <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
 
-                        <a href="#bela" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
-                                Bela
-                            </a>
-                        <a href="https://jakob-l-m.de" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
-                                Jakob
-                            </a>
+                        <a href="#bela"
+                            class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                            Bela
+                        </a>
+                        <a href="https://jakob-l-m.de"
+                            class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+                            Jakob
+                        </a>
                     </div>
                 </li>
             </ul>
-            <div class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded hidden" id="example-collapse-sidebar">
+            <div class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded hidden"
+                id="example-collapse-sidebar">
                 <div class="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200">
                     <div class="flex flex-wrap">
                         <div class="w-6/12">
-                            <a class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0" href="javascript:void(0)">
-                                    BIKE-MAR-GRATION
-                                </a>
+                            <a class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+                                href="javascript:void(0)">
+                                BIKE-MAR-GRATION
+                            </a>
                         </div>
                         <div class="w-6/12 flex justify-end">
-                            <button type="button" class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent" onclick="toggleNavbar('example-collapse-sidebar')">
-                                    <i class="fas fa-times"></i>
-                                </button>
+                            <button type="button"
+                                class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+                                onclick="toggleNavbar('example-collapse-sidebar')">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
                 <ul class="z-20 md:flex-col md:min-w-full flex flex-col list-none">
                     <li class="items-center">
-                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('map_view')"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
-                                Map View</a>
+                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block"
+                            onclick="show_page('map_view')"><i class="fas fa-map opacity-75 mr-2 text-sm"></i>
+                            Map View</a>
                     </li>
                     <li class="items-center">
-                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('live_analytics', 'main')"><i class="fas fa-chart-line opacity-75 mr-2 text-sm"></i>
-                                Live Analytics</a>
+                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block"
+                            onclick="show_page('live_analytics', 'main')"><i
+                                class="fas fa-chart-line opacity-75 mr-2 text-sm"></i>
+                            Live Analytics</a>
                     </li>
                     <li class="items-center">
-                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block" onclick="show_page('live_analytics', 'main')"><i class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
-                                Historic Analysis</a>
+                        <a class="text-blueGray-700 cursor-pointer hover:text-orange-600 text-xs uppercase py-3 font-bold block"
+                            onclick="show_page('live_analytics', 'main')"><i
+                                class="fas fa-chart-simple text-blueGray-400 mr-2 text-sm"></i>
+                            Historic Analysis</a>
                     </li>
                 </ul>
 
@@ -129,63 +152,119 @@
 
                 <!-- Live Analytics-->
                 <div class="relative py-2 live_analytics hidden">
-                    <div class="mx-auto w-full">
-                        <div>
-                            <!-- Rental history -->
-                            <div class="flex flex-wrap py-2">
-                                <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
-                                    <div class="relative flex flex-col min-w-0 break-words bg-white rounded xl:mb-0 shadow-lg">
-                                        <div class="flex-auto p-4">
-                                            <div class="flex flex-wrap">
-                                                <div class="relative flex flex-row w-full pr-4 max-w-full flex-grow flex-1">
-                                                    <h5 class="text-blueGray-400 uppercase font-bold text-xs">
-                                                        Bikes currently rented:
-                                                    </h5>
-                                                    <h5 id="current_bikes" class="ml-2 text-blueGray-400 uppercase font-bold text-xs"></h5>
+                    <div class="mx-auto w-full flex flex-row flex-wrap">
+                        <!-- Rental history -->
+                        <div class="flex flex-wrap py-2 w-full lg:w-6/12 px-4">
+                            <div class="flex flex-col break-words bg-white rounded xl:mb-0 shadow-lg w-full">
+                                <div class="flex-auto p-4">
+                                    <div class="flex flex-wrap">
+                                        <div class="relative flex flex-row w-full pr-4">
+                                            <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                                Bikes currently rented:
+                                            </h5>
+                                            <h5 id="current_bikes"
+                                                class="ml-2 text-blueGray-400 uppercase font-bold text-xs"></h5>
+                                        </div>
+                                    </div>
+                                    <div class="py-4 flex-auto">
+                                        <!-- Rented bikes chart -->
+                                        <div class="relative" style="height:150px">
+                                            <canvas id="rented-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Trip Stats -->
+                        <div class="flex flex-wrap py-2 w-full lg:w-6/12 px-4 h-fit">
+                            <div class="flex flex-col bg-white rounded mb-6 xl:mb-0 shadow-lg w-full">
+                                <div class="flex-auto p-4">
+                                    <div class="flex flex-wrap">
+                                        <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                            <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                                Number of trips
+                                            </h5>
+                                            <span id="current_bikes"
+                                                class="font-semibold text-xl text-blueGray-700"></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-auto">
+                                        <!-- Trip Info -->
+                                        <div class="relative h-fit">
+                                            <div class="flex flex-row py-4">
+                                                <div class="flex-1" style="text-align: center;">
+                                                    <h3 class="text-blueGray-400 uppercase font-bold text-xl"
+                                                        id="trips_1h">?</h3>
+                                                    <p class="text-blueGray-400 uppercase text-xs">Last hour</p>
                                                 </div>
-                                            </div>
-                                            <div class="py-4 flex-auto">
-                                                <!-- Rented bikes chart -->
-                                                <div class="relative" style="height:150px">
-                                                    <canvas id="rented-chart"></canvas>
+                                                <div class="flex-1" style="text-align: center;">
+                                                    <h3 class="text-blueGray-400 uppercase font-bold text-xl"
+                                                        id="trips_8h">?</h3>
+                                                    <p class="text-blueGray-400 uppercase text-xs">Last 8 hours
+                                                    </p>
+                                                </div>
+                                                <div class="flex-1" style="text-align: center;">
+                                                    <h3 class="text-blueGray-400 uppercase font-bold text-xl"
+                                                        id="trips_24h">?</h3>
+                                                    <p class="text-blueGray-400 uppercase text-xs">Last day</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Trip Stats -->
-                            <div class="flex flex-wrap py-2">
-                                <div class="w-full lg:w-6/12 xl:w-12/12 px-4">
-                                    <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
-                                        <div class="flex-auto p-4">
-                                            <div class="flex flex-wrap">
-                                                <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
-                                                    <h5 class="text-blueGray-400 uppercase font-bold text-xs">
-                                                        Number of trips
-                                                    </h5>
-                                                    <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
-                                                </div>
-                                            </div>
-                                            <div class="flex-auto">
-                                                <!-- Trip Info -->
-                                                <div class="relative h-fit">
-                                                    <div class="flex flex-row py-4">
-                                                        <div class="flex-1" style="text-align: center;">
-                                                            <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_1h">?</h3>
-                                                            <p class="text-blueGray-400 uppercase text-xs">Last hour</p>
-                                                        </div>
-                                                        <div class="flex-1" style="text-align: center;">
-                                                            <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_8h">?</h3>
-                                                            <p class="text-blueGray-400 uppercase text-xs">Last 8 hours</p>
-                                                        </div>
-                                                        <div class="flex-1" style="text-align: center;">
-                                                            <h3 class="text-blueGray-400 uppercase font-bold text-xl" id="trips_24h">?</h3>
-                                                            <p class="text-blueGray-400 uppercase text-xs">Last day</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        </div>
+                        <!-- Trip Details -->
+                        <div class="w-full flex mt-2 py-2 mx-4 px-4 bg-white rounded mb-6 xl:mb-0 shadow-lg">
+
+                            <div class="flex-auto p-4">
+                                <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                    <h5 class="text-blueGray-400 uppercase font-bold text-xs">
+                                        Trip Details
+                                    </h5>
+                                    <span id="current_bikes" class="font-semibold text-xl text-blueGray-700"></span>
+                                </div>
+                                <div class="flex-auto">
+                                    <!-- Trip Info -->
+                                    <div class="flex flex-row justify-between">
+                                        <div class="w-2/12 py-4">
+                                            <select data-te-select-init multiple data-te-select-filter="true" id="stationFrom">
+                                                <!-- Filled in ui.js -->
+                                                <option value="1">One</option>
+                                            </select>
+                                            <label data-te-select-label-ref>Origin</label>
+                                        </div>
+                                        <div class="w-2/12 py-4">
+                                            <select data-te-select-init multiple data-te-select-filter="true" id="stationTo">
+                                                <!-- Filled in ui.js -->
+                                                <option value="1">One</option>
+                                            </select>
+                                            <label data-te-select-label-ref>Destination</label>
+                                        </div>
+                                        <div class="w-2/12 py-4">
+                                            <select data-te-select-init id="tripTime">
+                                                <option value="lastHour">Last Hour</option>
+                                                <option value="last8">Last 8 Hours</option>
+                                                <option value="lastDay">Last Day</option>
+                                                <option value="lastMonth">Last Month</option>
+                                                <option value="allTime">All Time</option>
+                                            </select>
+                                            <label data-te-select-label-ref>Time Intervall</label>
+                                        </div>
+                                        <div class="w-2/12 py-4">
+                                            <select data-te-select-init id="tripRes">
+                                                <option value="top10">Top 10</option>
+                                                <option value="top5">Top 5</option>
+                                                <option value="bottom10">Bottom 10</option>
+                                                <option value="bottom5">Bottom 5</option>
+                                                <option value="allTrips">All trips (may lag)</option>
+                                            </select>
+                                            <label data-te-select-label-ref>Result Size</label>
+                                        </div>
+                                        <div class="w-fit w-max-2/12 py-4 mr-0">
+                                            <button type="button" class="inline-block rounded bg-orange-400 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-orange-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]" id="tripBtn">
+                                                Execute
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -201,19 +280,22 @@
 
                         <ul class="flex flex-wrap list-none justify-center">
                             <li>
-                                <a href="https://jakob-l-m.de" class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
-                                            Jakob L. Müller
-                                        </a>
+                                <a href="https://jakob-l-m.de"
+                                    class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
+                                    Jakob L. Müller
+                                </a>
                             </li>
                             <li>
-                                <a href="" class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
-                                            Bela Schinke
-                                        </a>
+                                <a href=""
+                                    class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
+                                    Bela Schinke
+                                </a>
                             </li>
                             <li>
-                                <a href="https://github.com/creativetimofficial/tailwind-starter-kit/blob/main/LICENSE.md" class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
-                                            MIT License
-                                        </a>
+                                <a href="https://github.com/creativetimofficial/tailwind-starter-kit/blob/main/LICENSE.md"
+                                    class="text-blueGray-600 hover:text-blueGray-800 text-sm font-semibold block py-1 px-3">
+                                    MIT License
+                                </a>
                             </li>
                         </ul>
 
@@ -223,6 +305,7 @@
         </div>
     </div>
     <script src="assets/js/ui.js"></script>
+    <script type="text/javascript" src="assets/js/tw-elements.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" charset="utf-8"></script>
     <script src="https://unpkg.com/@popperjs/core@2.9.1/dist/umd/popper.min.js" charset="utf-8"></script>
     <script type="text/javascript">
