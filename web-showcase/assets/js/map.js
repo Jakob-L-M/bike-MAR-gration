@@ -9,6 +9,7 @@ var stationMarkers = L.layerGroup().addTo(map);
 var stations = []
 
 const radius = 100
+var firstLoad = true
 
 function update_stations() {
 
@@ -24,6 +25,12 @@ function update_stations() {
         }
         setTimeout(update_stations, 60000); // update every minute to ensure up-to-date data
     })
+
+    if (firstLoad) {
+        fill_dropdown(stations)
+    }
+
+    firstLoad = false
 
     // also auto update trip info
     update_trip_info()
