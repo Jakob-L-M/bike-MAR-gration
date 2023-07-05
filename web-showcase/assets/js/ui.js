@@ -4,7 +4,7 @@ function show_page(group) {
     $(`.${current}`).toggleClass('hidden')
     $(`.${group}`).toggleClass('hidden')
     current = group
-
+    tripMap.invalidateSize();
 }
 
 function update_trip_info() {
@@ -29,5 +29,4 @@ function fill_dropdown(stations) {
         opt.value = s.id
         tripsTo.add(opt)
     }
-    console.log(stations)
 }
