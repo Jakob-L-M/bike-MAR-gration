@@ -1,3 +1,8 @@
+function get_current_timeId() {
+    let timestamp = Date.now()
+    return Math.floor(timestamp / (180 * 1000))
+}
+
 async function get_bike_distribution(timeId, DB) {
     sql = `SELECT id, name, latitude, longitude, COALESCE(numBikes, 0) as n FROM (SELECT * FROM stations WHERE firstSeen <= ${timeId} AND lastSeen >= ${timeId}) s LEFT OUTER JOIN (SELECT stationId, COUNT(id) as numBikes from bikes WHERE timeId = ${timeId} GROUP BY stationId) b 
     ON s.id = b.stationId;`
@@ -102,6 +107,68 @@ async function get_number_of_trips(DB, since) {
                 rej(err)
             } else {
                 res(result[0].n)
+            }
+        })
+
+    }))
+}
+
+
+async function get_trip_details(origins, destinations, since, resSize, DB) {
+    // since is the number of 3min intervals
+
+    if (origins.indexOf(' ') != -1 || destinations.indexOf(' ') != -1) return
+    
+    let timeId = get_current_timeId()
+
+    var start = 0
+
+    if (since == 'lastHour') {
+        start = timeId - 20
+    } else if (since == 'last8') {
+        start = timeId - 160
+    } else if (since == 'lastDay') {
+        start = timeId - 480
+    } else if (since == 'lastMonth') {
+        start = timeId - 14400
+    }
+
+    var ordering = 'DESC'
+    var limit = 50000
+
+    if (resSize == 'top10') {
+        limit = 10
+    } else if (resSize == 'top5') {
+        limit = 5
+    } else if (resSize == 'bottom10') {
+        limit = 10
+        ordering = 'ASC'
+    } else if (resSize == 'bottom5') {
+        limit = 5
+        ordering = 'ASC'
+    }
+
+    sql = `SELECT
+            stationId as stationFrom,
+            nextStationId as stationTo,
+            COUNT(*) as numTrips
+        FROM trips
+            WHERE stationId IS NOT NULL
+            AND nextStationId IS NOT NULL
+            AND endTime > ${start} -- since
+            AND stationId IN ${origins} -- origins
+            AND nextStationId IN ${destinations} -- destinations
+        GROUP BY stationId, nextStationId
+        ORDER BY numTrips ${ordering} -- DESC if bottom X
+        LIMIT ${limit} -- Limit`
+
+    return await (new Promise((res, rej) => {
+        DB.query(sql, (err, result) => {
+            if (err) {
+                console.log(err)
+                rej(err)
+            } else {
+                res(result)
             }
         })
 
@@ -217,5 +284,6 @@ module.exports = {
     get_number_of_trips,
     update_trips,
     get_station_history,
-    get_prediction_data
+    get_prediction_data,
+    get_trip_details
 }

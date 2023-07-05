@@ -37,6 +37,9 @@ function update_trip_details() {
     console.log(fromStr, toStr, timeInfo.value, resultSize.value)
 
     // call api
+    $.getJSON(`/api/trip_details?origins=${fromStr}&destinations=${toStr}&since=${timeInfo.value}&resSize=${resultSize.value}`, (data) => {
+        console.log(data)
+    })
 
     // display result
 }

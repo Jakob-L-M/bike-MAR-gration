@@ -57,6 +57,18 @@ app.get('/api/stations', async function(req, res) {
 
 })
 
+app.get('/api/trip_details', async function(req, res) {
+    console.log('db request', req.url)
+    
+    if (req.query.origins === undefined || req.query.destinations === undefined
+        || req.query.since === undefined || req.query.resSize === undefined) {
+            res.send(null)
+            return
+        }
+
+    res.send((await db_functions.get_trip_details(req.query.origins, req.query.destinations, req.query.since, req.query.resSize, DB_CONNECTION)))
+})
+
 app.get('/api/rented_info', async function(req, res) {
     console.log('db request', req.url)
     let timestamp = Date.now()
