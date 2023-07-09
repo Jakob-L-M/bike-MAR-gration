@@ -20,6 +20,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <script src="assets/js/leaflet.geo.js"></script>
+	<script src="assets/js/leaflet.arrow.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"> </script>
 
@@ -38,7 +41,7 @@
 <body class="text-blueGray-700 antialiased min-h-screen bg-zinc-200">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <nav
-        class="z-20 md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
+        class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
         <div
             class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto">
             <button
@@ -269,6 +272,20 @@
                                 </div>
                                 <div class="relative chart h-96 w-full" id="tripMap">
                                     
+                                </div>
+                                <div class="w-full max-h-72 overflow-scroll mt-4">
+                                <table class="min-w-full text-left text-sm font-light" id="tripTable">
+                                    <thead class="border-b font-bold dark:border-neutral-500">
+                                      <tr>
+                                        <th scope="col" class="px-6 py-4">#Trips</th>
+                                        <th scope="col" class="px-6 py-4">Origin</th>
+                                        <th scope="col" class="px-6 py-4">Destination</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Filled using JS -->
+                                    </tbody>
+                                </table>
                                 </div>
                             </div>
                         </div>

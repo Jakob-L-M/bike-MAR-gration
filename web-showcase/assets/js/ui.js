@@ -1,4 +1,5 @@
 let current = 'map_view'
+var inverted_station_index = {}
 
 function show_page(group) {
     $(`.${current}`).toggleClass('hidden')
@@ -18,6 +19,7 @@ function update_trip_info() {
 function fill_dropdown(stations) {
     let tripsFrom = document.getElementById('stationFrom')
     let tripsTo = document.getElementById('stationTo')
+    let c = 0
     for (s of stations) {
         let opt = document.createElement('option')
         opt.text = s.name
@@ -28,5 +30,8 @@ function fill_dropdown(stations) {
         opt.text = s.name
         opt.value = s.id
         tripsTo.add(opt)
+
+        inverted_station_index[s.id] = c
+        c++
     }
 }
