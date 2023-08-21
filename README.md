@@ -67,9 +67,12 @@ The mysql database requires the following tables:
 
     Additionally we construct B-Trees over the primary key(bikeId, startTime) as well as stationId and nextStationId to improve query performance
 
-    **Usage:** The `trips` table stores information about the trips of all bikes. We define a trip through a bikeId and a startTime. Every trip can be ongoing if nextStartTime is NULL or complete if a nextStartTime exists. Trips are automatically updated during scraping.
+    **Usage:** 
+    
+    The `trips` table stores information about the trips of all bikes. We define a trip through a bikeId and a startTime. Every trip can be ongoing if nextStartTime is NULL or complete if a nextStartTime exists. Trips are automatically updated during scraping.
 
 4. `cities`
+
     **Properties:** 
     | # | name | data typ| nullable | foreign key | comment |
     |---|---|---|---|---|----|
@@ -78,7 +81,30 @@ The mysql database requires the following tables:
     3 | latitude | decimal(16,8) | NO |  | latitude of the city. Used for weather scraping |
     4 | longitude | decimal(16,8) | NO |  | longitude of the city. Used for weather scraping |
 
+    **Usage:** 
+    
+    The `cities` table stores information about the cites that are scraped. This opens the possible of multi-city analysis. For now we only considered a single cite (Marburg).
+
 5. `weather`
+
+    **Properties:** 
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    1 | timeId | int | NO |  | timeId of scrape |
+    2 | cityId | int | NO | cities(id) | cityId that was scraped |
+    3 | temp | decimal(8,4) | NO |  | temperature in degrees Celsius |
+    4 | feelsLikeTemp | decimal(8,4) | NO |  | felt temperature in degrees Celsius |
+    5 | isDay | tinyint(1) | NO |  | boolean indicator if it was day (between sunrise and sunset) at the time of scraping |
+    6 | description | varchar(64) | NO |  | The weather condition as a string. Eg cloudy, clear, overcast, ... |
+    7 | cloud | int | NO |  | Value from 0 to 100 indicating cloud intensity |
+    8 | wind | decimal(8,4) | NO |  | wind speed in kilometers per hour |
+    9 | gust | decimal(8,4) | NO |  | gust speed in kilometers per hour |
+
+    The primary key is (timeId, cityId).
+
+    **Usage:** 
+    
+    The `weather` table stores the relevant subset of the weather scrape.
 
 
 
