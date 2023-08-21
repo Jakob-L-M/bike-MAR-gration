@@ -4,23 +4,83 @@ As part of the lecture "Data Integration" at the University of Marburg Bela Schi
 
 This document will given an overview over the steps taken, technologies used and the goal we want to archive.
 
-## Structure
+## Folder Structure
 
 This data integration project has four components: preparation, data integration, data cleaning, and showcase.
 
-- `data`: This folder explains how we obtained the underlying data. We describe the data pools as well as why and how we use the data.
+- `data/`: This folder explains how we obtained the underlying data. We describe the data pools as well as why and how we use the data.
 
-- `preparation`: Code to extract and load the datasets into a MySQL Database. Here we also do some selections, transformation and perform basic cleaning
+- `preparation/`: Code to extract and load the datasets into a MySQL Database. Here we also do some selections, transformation and perform basic cleaning
 
-- `integration`: We perform On-Line integration. The folder includes some of the used queries and information how the different sources are integrated on varying request.
+- `integration/`: We perform On-Line integration. The folder includes some of the used queries and information how the different sources are integrated on varying request.
 
-- `prediction-training`: Experiments to use the integrated dataset to predict bike distribution changes.
+- `prediction-training/`: Experiments to use the integrated dataset to predict bike distribution changes.
 
-- `web-showcase`: Code to run the interactive web app and use the integration pipeline.
+- `web-showcase/`: Code to run the interactive web app and use the integration pipeline.
 
-- `presentations`: Milestone presentations in the context of the course
+- `presentations/`: Milestone presentations in the context of the course
+
+## Notation
+
+- `time_id`: When we mention a time_id somewhere we always consider this value as the number of seconds since 01.01.1970 (aka a second based timestamp) divided by 180 (3 minutes). We use this notation since scraping is performed every three minutes and we do not need a more precises granularity.
 
 ## Documentation
+To run the project yourself a few steps are needed. After the project has been cloned, create a `.env` file in `web-showcase/`. The file needs to contain the following parameters:
+```conf
+MYSQL_HOST = "..."
+MYSQL_USER = "..."
+MYSQL_PASSWORD = "..."
+MYSQL_DATABASE = "..."
+SCRAPE_TRIGGER = "..."
+WEATHER_KEY = "..."
+```
+The MYSQL_... parameters are required for the database connection. SCRAPE_TRIGGER should be some UUID that is used to start the scraping process. WEATHER_KEY is the API key for [weather-api.com](TODO). Their free tier allows way more than enough requests for this project.
+
+### Database structure
+The mysql database requires the following tables:
+
+1. `bikes`
+
+    **Properties:** This tables has the columns _id_, _time_id_, _station_id_, _latitude_, _longitude_. The primary key is (_id_, _time_id_) and _station\_id_ is a foreign key from `stations`. We have build indices over _id_, _time_id_ and _station_id_ for better performance.
+
+    **Usage:** The `bikes` table stores the raw information that is scraped. Here _id_ is the bike number. When scraping we add one row for every bike. This is by far the longest table and grows by ~150k entries per day.
+
+2. `stations`
+
+    **Properties:** This tables has the columns _id_, _name_, _city_id_, _latitude_, _longitude_, _first_seen_, _last_seen_. The primary key is _id_ and _city_id_ is a foreign key from `cities`.
+
+    **Usage:** The `station` table stores information about the station positions as well as the first and last `time_id` of a stations appearance. Here _id_ is the station number. When scraping we update the _first_seen_ and _last_seen_ columns.
+
+3. `trips`
+
+    **Properties:** 
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    | 1 | bikeId | int | NO |  bikes(id) | id of the bike |
+    | 2 | startTime | int | NO |  | first timeId where the bike was seen at the stationId during that trip |
+    | 3 | endTime | int | NO |  | last timeId where the bike was seen at the stationId during that trip |
+    | 4 | stationId | int | YES | stations(id) | stationId that the bike stood at |
+    | 5 | latitude | decimal(10,6) | YES |  | latitude if bike is not at a station |
+    | 6 | longitude | decimal(10,6) | YES |  | longitude if bike is not at a station |
+    | 7 | nextStationId | int | YES | stations(id) | stationId of the next station, NULL if next station is not a station |
+    | 8 | nextStartTime | int | YES |  | startTime of the next station defining a trip if this is not NULL | 
+
+    Additionally we construct B-Trees over the primary key(bikeId, startTime) as well as stationId and nextStationId to improve query performance
+
+    **Usage:** The `trips` table stores information about the trips of all bikes. We define a trip through a bikeId and a startTime. Every trip can be ongoing if nextStartTime is NULL or complete if a nextStartTime exists. Trips are automatically updated during scraping.
+
+4. `cities`
+    **Properties:** 
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    1 | id | int | NO |  | unique id for every city. Eg auto increment |
+    2 | name | varchar(64) | NO |  | the cities name |
+    3 | latitude | decimal(16,8) | NO |  | latitude of the city. Used for weather scraping |
+    4 | longitude | decimal(16,8) | NO |  | longitude of the city. Used for weather scraping |
+
+5. `weather`
+
+
 
 ### Running the dev version locally
 First init node.js
