@@ -1,8 +1,26 @@
 # Bike-MAR-Gration
 
-As part of the lecture "Data Integration" at the University of Marburg Bela Schinke and Jakob L. Müller launched the (Next)Bike Mar(burg) (inte)gration project.
+As part of the lecture "Data Integration" at the University of Marburg, Bela Schinke and Jakob L. Müller launched the (Next)Bike Mar(burg) (inte)gration project.
 
-This document will given an overview over the steps taken, technologies used and the goal we want to archive.
+The product enables a user to view the past activity of a station and getting a prediction of future movement.
+
+![Main view of the web page](./data/screenshots/main_tab.png)
+
+Beside the real time predictions the product offers some analytics. A simple graph displays the number of bikes that where rented within the past 90min.
+
+![rental activity graph](./data/screenshots/rental_activity.png)
+
+Additionally we display the number of trips within the last hour, last 8 hours and last 24 hours.
+
+![trip stats](./data/screenshots/trip_stats.png)
+
+Finally we enable a user insights into trips by offering them a way to access the database via a form. Here they can select one or more origins and destinations a time window and target amount to get a visual display of which trips where driven. Further hover events help a user to spot where the trip starts and ends. The screenshot shows an example where `Neue Universitätsbibliothek` was select as the origin and all stations where selected as destinations. The time span was set to the total available time span and lastly the top 10 results were chosen.
+
+![trip detail window](./data/screenshots/trip_details.png)
+
+The website can be found under [bike-mar-gration.jakob-l-m.de](https://bike-mar-gration.jakob-l-m.de/). If you find bugs or have questions, feel free to contact me.
+
+This document will given an overview over the steps taken, technologies used to reach the shown product.
 
 ## Folder Structure
 

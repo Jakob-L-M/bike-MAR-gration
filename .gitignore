@@ -1,5 +1,6 @@
-data/*
 !data/.gitkeep
+!data/screenshots/*.png
+data/bikes_at_station/*
 
 node_modules/
 package-lock.json
