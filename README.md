@@ -41,15 +41,39 @@ The mysql database requires the following tables:
 
 1. `bikes`
 
-    **Properties:** This tables has the columns _id_, _time_id_, _station_id_, _latitude_, _longitude_. The primary key is (_id_, _time_id_) and _station\_id_ is a foreign key from `stations`. We have build indices over _id_, _time_id_ and _station_id_ for better performance.
+    **Properties:** 
 
-    **Usage:** The `bikes` table stores the raw information that is scraped. Here _id_ is the bike number. When scraping we add one row for every bike. This is by far the longest table and grows by ~150k entries per day.
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    1 | id | int | NO |  | the bike id as defined by nextBike |
+    2 | timeId | int unsigned | NO |  | timeId of the scrape |
+    3 | stationId | int | YES | stations(id) | the id of the station if the bike is parked at a station |
+    4 | latitude | decimal(16,10) | YES |  | latitude of the bike if the bike is not parked at a station |
+    5 | longitude | decimal(16,10) | YES |  | longitude of the bike if the bike is not parked at a station |
+
+    The primary key is (_id_, _time_id_) and _station\_id_ is a foreign key from `stations`. We have build indices over _id_, _time_id_ and _station_id_ for better performance.
+
+    **Usage:** 
+    
+    The `bikes` table stores the raw information that is scraped. Here _id_ is the bike number. When scraping we add one row for every bike. This is by far the longest table and grows by ~150k entries per day.
 
 2. `stations`
 
-    **Properties:** This tables has the columns _id_, _name_, _city_id_, _latitude_, _longitude_, _first_seen_, _last_seen_. The primary key is _id_ and _city_id_ is a foreign key from `cities`.
+    **Properties:** 
 
-    **Usage:** The `station` table stores information about the station positions as well as the first and last `time_id` of a stations appearance. Here _id_ is the station number. When scraping we update the _first_seen_ and _last_seen_ columns.
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    1 | id | int | NO |  | station id as defined by nextBike |
+    2 | name | varchar(64) | NO |  | The name of a station as text |
+    3 | cityId | int | NO | cities(id) | The id of the city that the station belongs to |
+    4 | latitude | decimal(10,6) | NO |  | latitude of the station. |
+    5 | longitude | decimal(10,6) | NO |  | longitude of the station |
+    6 | firstSeen | int unsigned | NO |  | timeId first occurrence in a scrape |
+    7 | lastSeen | int unsigned | NO |  | timeId last occurrence in a scrape |
+
+    **Usage:** 
+    
+    The `station` table stores information about the station positions as well as the first and last `time_id` of a stations appearance. Here _id_ is the station number. When scraping we update the _first_seen_ and _last_seen_ columns.
 
 3. `trips`
 
@@ -88,6 +112,7 @@ The mysql database requires the following tables:
 5. `weather`
 
     **Properties:** 
+
     | # | name | data typ| nullable | foreign key | comment |
     |---|---|---|---|---|----|
     1 | timeId | int | NO |  | timeId of scrape |
@@ -105,6 +130,22 @@ The mysql database requires the following tables:
     **Usage:** 
     
     The `weather` table stores the relevant subset of the weather scrape.
+
+6. `events`
+
+    **Properties:** 
+    
+    | # | name | data typ| nullable | foreign key | comment |
+    |---|---|---|---|---|----|
+    1 | date | date | NO |  | Date of the event |
+    2 | name | varchar(64) | NO |  | Name of the event |
+    3 | value | int | YES |  | Optional value of the event |
+    4 | description | varchar(128) | YES |  | Optional additional text |
+    5 | group | int | YES |  | Group Id if event fits into a group | 
+
+    **Usage:** 
+    
+    The `event` table stores information about events grouped into categories like public holidays or local events.
 
 
 
